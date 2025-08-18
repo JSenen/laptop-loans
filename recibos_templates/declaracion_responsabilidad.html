@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Declaración de responsabilidad – Uso de equipos informáticos</title>
+
+<style>
+  @page { size: A4; margin: 18mm; }
+  body { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: #111; line-height: 1.35; }
+  h1 { font-size: 20pt; margin: 0 0 6px 0; }
+  h2 { font-size: 14pt; margin: 18px 0 6px 0; }
+  .sub { color: #444; font-size: 11pt; margin-bottom: 14px; }
+  .box { border: 1px solid #333; padding: 10px 12px; margin: 10px 0; border-radius: 6px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .row { display: flex; gap: 12px; }
+  .label { width: 180px; color: #333; }
+  .value { flex: 1; font-weight: 600; }
+  .muted { color: #666; font-size: 10pt; }
+  .sign { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .sign-box { text-align: center; padding-top: 40px; }
+  .line { border-top: 1px solid #000; margin-top: 40px; padding-top: 4px; }
+  .small { font-size: 10pt; }
+  .right { text-align: right; }
+  .mono { font-family: Consolas, 'Courier New', monospace; }
+  .items ul { margin: 6px 0 0 18px; }
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .badge { font-size: 10pt; border: 1px solid #666; padding: 2px 6px; border-radius: 4px; }
+</style>
+
+</head>
+<body>
+ <header class="header">
+  <img src="{logo_izq}" class="logo" />
+  <div></div>
+  <img src="{logo_der}" class="logo" />
+</header>
+<style>
+  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .logo{height:48px}
+</style>
+
+<header>
+  <div>
+    <h1>Declaración de responsabilidad</h1>
+    <div class="sub">Normas de utilización de equipos portátiles (PNCD)</div>
+  </div>
+  <div class="badge">ANEXO</div>
+</header>
+
+<section class="box small">
+  <p>En el marco del Plan Nacional de Competencias Digitales se facilita un ordenador portátil para el desarrollo de acciones formativas. El uso del equipo es personal e intransferible. El adjudicatario se compromete a cumplir las normas de seguridad y custodia.</p>
+  <ul>
+    <li>No manejar información clasificada o no autorizada en el equipo.</li>
+    <li>No instalar software sin licencia ni introducir código malicioso.</li>
+    <li>No alterar físicamente el equipo ni sus periféricos.</li>
+    <li>Almacenar cifrada cualquier información confidencial estrictamente necesaria.</li>
+    <li>Previa devolución, eliminar la información del equipo.</li>
+    <li>No conectar a redes corporativas no autorizadas. Notificar incidencias y anomalías.</li>
+    <li>No dejar el equipo desatendido; comunicar pérdidas o robos de inmediato.</li>
+  </ul>
+  <p class="muted">Resumen operativo de las normas. Si se requiere, adjuntar versión completa vigente.</p>
+</section>
+
+<section class="box">
+  <div class="grid">
+    <div><span class="label">Nombre y apellidos:</span> <span class="value">{nombre} {apellidos}</span></div>
+    <div><span class="label">DNI:</span> <span class="value mono">{dni}</span></div>
+    <div><span class="label">TIP:</span> <span class="value mono">{tip}</span></div>
+    <div><span class="label">Curso:</span> <span class="value">{curso}</span></div>
+    <div><span class="label">Equipo / Nº de serie:</span> <span class="value">{equipo_descripcion} — <span class="mono">{num_serie}</span></span></div>
+    <div><span class="label">Fecha:</span> <span class="value">{fecha_documento}</span></div>
+  </div>
+</section>
+
+<section class="sign">
+  <div class="sign-box">
+    <div>El abajo firmante declara haber leído y comprendido las normas y se compromete a su cumplimiento.</div>
+    <div class="line">{firma_receptor_nombre}</div>
+    <div class="small">Lugar: {lugar} &nbsp;&nbsp; Fecha: {fecha_documento}</div>
+  </div>
+</section>
+</body>
+</html>
