@@ -54,3 +54,31 @@ CREATE TABLE handovers (
 );
 
 ALTER TABLE people ADD UNIQUE KEY uk_people_tip (tip); 
+
+-- 1) Tabla de ubicaciones
+CREATE TABLE IF NOT EXISTS locations (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre VARCHAR(120) NOT NULL,
+  tipo ENUM('Zona','Comandancia','Otro') DEFAULT 'Otro',
+  descripcion VARCHAR(255) NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 2) Portátiles: ubicación actual (cuando están "disponible")
+ALTER TABLE laptops
+  ADD COLUMN ubicacion_id INT NULL DEFAULT NULL,
+  ADD CONSTRAINT fk_laptops_ubicacion
+    FOREIGN KEY (ubicacion_id) REFERENCES locations(id) ON DELETE SET NULL;
+
+-- 3) Movimientos: almacén/lugar donde se hizo la entrega/devolución
+ALTER TABLE handovers
+  ADD COLUMN location_id INT NULL DEFAULT NULL,
+  ADD CONSTRAINT fk_handovers_location
+    FOREIGN KEY (location_id) REFERENCES locations(id) ON DELETE SET NULL;
+
+-- (Opcional) algunas ubicaciones de ejemplo
+INSERT INTO locations (nombre,tipo) VALUES
+ ('Zona','Zona'), ('Comandancia','Comandancia')
+ ON DUPLICATE KEY UPDATE nombre=VALUES(nombre);
+
+
+

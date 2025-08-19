@@ -12,6 +12,7 @@ use App\Controllers\CoursesController;
 use App\Controllers\HandoversController;
 use App\Controllers\ReceiptsController;
 use App\Controllers\ExportsController;
+use App\Controllers\LocationsController;
 
 
 // Simple router (?r=controller/action)
@@ -27,6 +28,7 @@ $map = [
   'dashboard' => HandoversController::class, 
   'receipts'  => ReceiptsController::class,
   'exports'   => ExportsController::class,
+  'locations' => LocationsController::class,
 ];
 
 if (!isset($map[$controller])) { http_response_code(404); echo "404"; exit; }

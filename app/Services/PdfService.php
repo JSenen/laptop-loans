@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class PdfService {
     private static function normalizeKey(string $k): string {
@@ -18,34 +19,51 @@ class PdfService {
     public static function renderTemplate(string $templatePath, array $data, bool $debugSaveHtml=false, ?string $debugOutPath=null): string {
         $html = file_get_contents($templatePath);
 
-        // normaliza claves: "Número de serie" => "numero_de_serie"
+        // normaliza claves y no escapa URLs de imagen
         $vars = [];
         foreach ($data as $k=>$v) $vars[self::normalizeKey((string)$k)] = (string)$v;
 
         $cb = function(array $m) use ($vars) {
             $key = self::normalizeKey($m[1]);
             $val = $vars[$key] ?? '';
-            // no escapar rutas de imagen
-            if (preg_match('~^(file|https?)://~i', $val)) return $val;
+            if (preg_match('~^(file|https?)://~i', $val)) return $val; // no escapar logos/urls
             return htmlspecialchars($val, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
         };
 
-        // {{ campo }} y [[ campo ]]
+        // {{campo}}, [[campo]] y {campo}
         $html = preg_replace_callback('/\{\{\s*([^}]+?)\s*\}\}/u', $cb, $html);
         $html = preg_replace_callback('/\[\[\s*([^\]]+?)\s*\]\]/u', $cb, $html);
-        // {campo} (SOLO palabras/guiones_bajos para no coger CSS)
-        $html = preg_replace_callback('/\{\s*([A-Za-z0-9_]+)\s*\}/u', $cb, $html);
+        $html = preg_replace_callback('/\{\s*([A-Za-z0-9_]+)\s*\}/u',   $cb, $html);
 
         if ($debugSaveHtml && $debugOutPath) @file_put_contents($debugOutPath, $html);
 
-        $dompdf = new Dompdf([
-            'isRemoteEnabled' => true,
-            'isHtml5ParserEnabled' => true,
-        ]);
+        $opts = new Options();
+        $opts->setIsRemoteEnabled(true);       // permitir http/file
+        $opts->setIsHtml5ParserEnabled(true);
+        $opts->setChroot(BASE_PATH);           // ✅ permite leer ficheros bajo el proyecto
+
+        $dompdf = new Dompdf($opts);
         $dompdf->loadHtml($html, 'UTF-8');
         $dompdf->setPaper('A4');
         $dompdf->render();
+
+        // // Guarda SIEMPRE una copia para depuración
+        //     $defaultDebug = BASE_PATH . '/storage/recibos/__last_rendered.html';
+        //     @mkdir(dirname($defaultDebug), 0775, true);
+        //     @file_put_contents($defaultDebug, $html);
+
+        //     // Si además pasas ruta específica
+        //     if ($debugSaveHtml && $debugOutPath) {
+        //         @file_put_contents($debugOutPath, $html);
+        //     }
+         if (defined('DEBUG_PDF') && DEBUG_PDF && $debugOutPath) {
+            @file_put_contents($debugOutPath, $html);
+        }
+
         return $dompdf->output();
+
+       
+
     }
 
     public static function savePdf(string $binary, string $dir, string $filename): string {
@@ -55,10 +73,13 @@ class PdfService {
         return $path;
     }
 
+    /** Devuelve file:///C:/... válido para Dompdf en Windows */
     public static function fileUrl(string $path): string {
         $abs = realpath($path) ?: $path;
         $abs = str_replace('\\', '/', $abs);
-        if (preg_match('~^[A-Za-z]:/~', $abs)) $abs = '/'.$abs; // -> /C:/...
-        return 'file://' . $abs; // file:///C:/...
+        if (preg_match('~^[A-Za-z]:/~', $abs)) {  // C:/...
+            $abs = '/' . $abs;                     // /C:/...
+        }
+        return 'file://' . $abs;                   // -> file:///C:/...
     }
 }

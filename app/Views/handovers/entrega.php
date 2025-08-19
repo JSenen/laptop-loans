@@ -44,6 +44,15 @@
 
       <label style="margin-top:12px">Observaciones</label>
       <textarea name="observaciones" rows="3"></textarea>
+<div class="mb-3">
+  <label class="form-label">Almacén (lugar de entrega)</label>
+  <select name="location_id" class="form-select">
+    <option value="">— Seleccionar —</option>
+    <?php foreach ($locations as $loc): ?>
+      <option value="<?= (int)$loc['id'] ?>"><?= htmlspecialchars($loc['nombre']) ?> (<?= htmlspecialchars($loc['tipo']) ?>)</option>
+    <?php endforeach; ?>
+  </select>
+</div>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
         <div><label>Fecha</label><input type="datetime-local" name="fecha"></div>

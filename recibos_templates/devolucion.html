@@ -1,100 +1,96 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Recibo de devolución - {curso}</title>
-
+<title>Recibo de DEVOLUCIÓN</title>
 <style>
-  @page { size: A4; margin: 18mm; }
-  body { font-family: Arial, Helvetica, sans-serif; font-size: 12pt; color: #111; line-height: 1.35; }
-  h1 { font-size: 20pt; margin: 0 0 6px 0; }
-  h2 { font-size: 14pt; margin: 18px 0 6px 0; }
-  .sub { color: #444; font-size: 11pt; margin-bottom: 14px; }
-  .box { border: 1px solid #333; padding: 10px 12px; margin: 10px 0; border-radius: 6px; }
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
-  .row { display: flex; gap: 12px; }
-  .label { width: 180px; color: #333; }
-  .value { flex: 1; font-weight: 600; }
-  .muted { color: #666; font-size: 10pt; }
-  .sign { margin-top: 26px; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .sign-box { text-align: center; padding-top: 40px; }
-  .line { border-top: 1px solid #000; margin-top: 40px; padding-top: 4px; }
-  .small { font-size: 10pt; }
-  .right { text-align: right; }
-  .mono { font-family: Consolas, 'Courier New', monospace; }
-  .items ul { margin: 6px 0 0 18px; }
-  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-  .badge { font-size: 10pt; border: 1px solid #666; padding: 2px 6px; border-radius: 4px; }
+  * { box-sizing: border-box; }
+  body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12pt; color: #111; margin: 24mm 18mm; }
+  h1 { font-size: 22pt; margin: 6mm 0 2mm; }
+  .sub { font-size: 11pt; color:#333; margin-bottom: 6mm; }
+  .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8mm; }
+  .logo { height:48px; }
+  .badge { font-size: 10pt; border:1px solid #666; padding:2px 8px; border-radius: 4px; display:inline-block; }
+  .box { border:1px solid #666; border-radius:6px; padding:6mm; margin:5mm 0; }
+  .row { display:flex; gap:8mm; flex-wrap:wrap; }
+  .col { flex: 1 1 60mm; }
+  .label { font-weight:bold; }
+  .mt { margin-top:4mm; }
+  .items ul { margin: 2mm 0 0 6mm; padding:0; }
+  .items li { margin: 1mm 0; }
+  .muted { color:#555; font-size:10pt; }
+  .signs { display:flex; justify-content:space-between; margin-top:10mm; gap:12mm; }
+  .sign { flex:1 1 45%; text-align:center; }
+  .line { border-top:1px solid #000; margin-top:22mm; }
 </style>
-
 </head>
 <body>
-  <header class="header">
- <img src="{logo_izq}" class="logo" />
-  <div></div>
-  <img src="{logo_der}" class="logo" />
-</header>
-<style>
-  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-  .logo{height:48px}
-</style>
-
-<header>
-  <div>
-    <h1>Documento de devolución de material</h1>
-    <div class="sub"><strong>{curso}</strong></div>
-  </div>
-  <div class="badge">DEVOLUCIÓN</div>
-</header>
-
-<section class="box">
-  <div class="grid">
-    <div><span class="label">Nombre y apellidos:</span> <span class="value">{nombre} {apellidos}</span></div>
-    <div><span class="label">DNI:</span> <span class="value mono">{dni}</span></div>
-    <div><span class="label">TIP:</span> <span class="value mono">{tip}</span></div>
-    <div><span class="label">Teléfono:</span> <span class="value">{telefono}</span></div>
-    <div><span class="label">Email corporativo:</span> <span class="value">{email}</span></div>
-    <div><span class="label">Empleo:</span> <span class="value">{empleo}</span></div>
-    <div><span class="label">Unidad:</span> <span class="value">{unidad}</span></div>
-  </div>
-</section>
-
-<section class="box">
-  <h2>Equipo devuelto</h2>
-  <div class="grid">
-    <div><span class="label">Descripción:</span> <span class="value">{equipo_descripcion}</span></div>
-    <div><span class="label">Nº de serie:</span> <span class="value mono">{num_serie}</span></div>
-    <div><span class="label">Curso:</span> <span class="value">{curso}</span></div>
-    <div><span class="label">Fecha de devolución:</span> <span class="value">{fecha_devolucion}</span></div>
+  <div class="header">
+    <img src="{logo_izq}" class="logo" />
+    <div class="badge">ENTREGA</div>
+    <img src="{logo_der}" class="logo" />
   </div>
 
-  <div class="items">
-    <div class="label">Se devuelve con:</div>
-    <ul>
-      <li>{incluye_1}</li>
-      <li>{incluye_2}</li>
-      <li>{incluye_3}</li>
-    </ul>
-  </div>
-</section>
+  <h1>Documento de devolución de material</h1>
+  <div class="sub"><strong>{curso}</strong></div>
 
-<section class="box small">
-  Declaro haber devuelto el material en las mismas condiciones de entrega, sin software instalado por el usuario ni documentos de ningún tipo, conforme a las instrucciones de devolución.
-</section>
-
-<section class="sign">
-  <div class="sign-box">
-    <div>Firma del Alumno</div>
-    <div class="line">{firma_receptor_nombre}</div>
-    <div class="small">TIP: {tip}</div>
+  <div class="box">
+    <div class="label">Datos del adjudicatario</div>
+    <div class="row mt">
+      <div class="col"><span class="label">Nombre y apellidos:</span> {nombre} {apellidos}</div>
+    </div>
+    <div class="row">
+      <div class="col"><span class="label">DNI:</span> {dni}</div>
+      <div class="col"><span class="label">TIP:</span> {tip}</div>
+    </div>
+    <div class="row">
+      <div class="col"><span class="label">Teléfono:</span> {telefono}</div>
+      <div class="col"><span class="label">Email corporativo:</span> {email}</div>
+    </div>
+    <div class="row">
+      <div class="col"><span class="label">Empleo:</span> {empleo}</div>
+      <div class="col"><span class="label">Unidad:</span> {unidad}</div>
+    </div>
   </div>
-  <div class="sign-box">
-    <div>Firma del receptor</div>
-    <div class="line">{firma_retorno_nombre}</div>
-    <div class="small">TIP: {firma_retorno_tip}</div>
-  </div>
-</section>
 
-<p class="right small">Lugar: {lugar} &nbsp;&nbsp; Fecha: {fecha_devolucion}</p>
+  <div class="box">
+    <div class="label">Equipo devuelto</div>
+    <div class="row mt">
+      <div class="col"><span class="label">Descripción:</span> {equipo_descripcion}</div>
+      <div class="col"><span class="label">Nº de serie:</span> {num_serie}</div>
+    </div>
+    <div class="row">
+      <div class="col"><span class="label">Curso:</span> {curso}</div>
+      <div class="col"><span class="label">Fecha de devolución:</span> {fecha_devolucion}</div>
+    </div>
+    <div class="mt"><span class="label">Se devuelve con:</span></div>
+    <div class="items">
+      <ul>
+        <li>{incluye_1}</li>
+        <li>{incluye_2}</li>
+        <li>{incluye_3}</li>
+        <li>{incluye_4}</li>
+        <li>{incluye_5}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="muted">
+      Declaro haber devuelto el material en las mismas condiciones de entrega, sin software instalado por el usuario y con todos sus accesorios.
+    </div>
+  </div>
+
+  <div class="signs">
+    <div class="sign">
+      <div class="line"></div>
+      <div>Firma del receptor</div>
+      <div class="muted">{firma_receptor_nombre}</div>
+    </div>
+    <div class="sign">
+      <div class="line"></div>
+      <div>Firma y sello</div>
+    </div>
+  </div>
 </body>
 </html>

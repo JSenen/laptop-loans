@@ -4,10 +4,17 @@ use PDO;
 
 class Handover {
     public static function create(array $d): int {
-        $sql="INSERT INTO handovers (laptop_id, person_id, course_id, tipo, fecha, observaciones, recibido_por, recibo_pdf_path) VALUES (?,?,?,?,?,?,?,?)";
-        DB::pdo()->prepare($sql)->execute([
-            $d['laptop_id'],$d['person_id'],$d['course_id'] ?? null,$d['tipo'],$d['fecha'],$d['observaciones'] ?? null,$d['recibido_por'] ?? null,$d['recibo_pdf_path'] ?? null
+                $st = DB::pdo()->prepare("
+        INSERT INTO handovers
+        (laptop_id, person_id, course_id, tipo, fecha, observaciones, recibido_por, recibo_pdf_path, location_id)
+        VALUES (?,?,?,?,?,?,?,?,?)
+        ");
+        $st->execute([
+        $d['laptop_id'], $d['person_id'], $d['course_id'] ?? null, $d['tipo'], $d['fecha'],
+        $d['observaciones'] ?? null, $d['recibido_por'] ?? null, $d['recibo_pdf_path'] ?? null,
+        $d['location_id'] ?? null
         ]);
+
         return (int)DB::pdo()->lastInsertId();
     }
     public static function lastForLaptop(int $laptop_id): ?array {
@@ -20,6 +27,7 @@ class Handover {
                 JOIN people p ON p.id=h.person_id
                 JOIN laptops l ON l.id=h.laptop_id
                 LEFT JOIN courses c ON c.id=h.course_id
+                LEFT JOIN locations loc ON loc.id = h.location_id
                 ORDER BY h.fecha DESC, h.id DESC
                 LIMIT $limit";
         return DB::pdo()->query($sql)->fetchAll();

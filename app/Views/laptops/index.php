@@ -14,6 +14,7 @@
         <td><?= htmlspecialchars($l['marca']) ?></td>
         <td><?= htmlspecialchars($l['modelo']) ?></td>
         <td><?= htmlspecialchars($l['estado']) ?></td>
+        <td><?= htmlspecialchars($l['ubicacion'] ?? '') ?></td>
       </tr>
     <?php endforeach; ?>
     </tbody>

@@ -62,3 +62,9 @@ function asset(string $path): string {
     // para CSS/JS: asset('assets/css/app.css')
     return base_url() . '/' . ltrim($path, '/');
 }
+function csrf_field(): string {
+    return '<input type="hidden" name="csrf" value="' .
+           htmlspecialchars(csrf_token(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
+           '">';
+}
+

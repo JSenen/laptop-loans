@@ -18,6 +18,8 @@
       <a href="<?= url('people/index') ?>">Personas</a>
       <a href="<?= url('laptops/index') ?>">Portátiles</a>
       <a href="<?= url('courses/index') ?>">Cursos</a>
+      <a href="<?= url('locations/index') ?>">Ubicaciones</a>
+
       <a href="<?= url('handovers/entrega') ?>">Entrega</a>
       <a href="<?= url('handovers/devolucion') ?>">Devolución</a>
   </nav>
