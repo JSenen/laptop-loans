@@ -5,8 +5,8 @@ return [
     'host' => '127.0.0.1',
     'port' => 3306,
     'name' => 'laptop_loans',
-    'user' => '', // TODO user 
-    'pass' => '', // TODO password
+    'user' => 'gati', // TODO user 
+    'pass' => '3-Aminavana', // TODO password
     'charset' => 'utf8mb4',
   ],
   'app' => [

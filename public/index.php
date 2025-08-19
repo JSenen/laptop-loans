@@ -11,6 +11,8 @@ use App\Controllers\LaptopsController;
 use App\Controllers\CoursesController;
 use App\Controllers\HandoversController;
 use App\Controllers\ReceiptsController;
+use App\Controllers\ExportsController;
+
 
 // Simple router (?r=controller/action)
 $r = $_GET['r'] ?? 'dashboard/index';
@@ -24,6 +26,7 @@ $map = [
   'handovers' => HandoversController::class,
   'dashboard' => HandoversController::class, 
   'receipts'  => ReceiptsController::class,
+  'exports'   => ExportsController::class,
 ];
 
 if (!isset($map[$controller])) { http_response_code(404); echo "404"; exit; }

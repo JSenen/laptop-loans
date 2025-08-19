@@ -38,3 +38,10 @@ Luego crea un servicio que lea `recibos_templates/*.html`, reemplace `{{placehol
 - Implementar descarga de recibo desde `handovers/index`
 - Control de roles/usuarios desde BD
 - Firma manuscrita (canvas HTML5) y almacenamiento PNG/Base64
+
+##Para XAMP Composer
+
+extension=gd
+extension=zip
+extension=mbstring
+extension=fileinfo
