@@ -4,14 +4,21 @@ use App\Models\{Person, DB};
 
 class PeopleController {
   public function index() {
-    $show = $_GET['show'] ?? 'active';  // active|archived|all
-    $soloActivos = $show === 'active' ? true : ($show === 'archived' ? false : false);
-    $people = ($show === 'all') ? Person::all(false)
-            : ($show === 'archived'
-                ? array_filter(Person::all(false), fn($p)=> (int)$p['activo']===0)
-                : Person::all(true));
-    return view('people/index', compact('people','show'));
-  }
+  $show = $_GET['show'] ?? 'active'; // active|archived|all
+  $where = $show==='active' ? "WHERE activo=1" : ($show==='archived' ? "WHERE activo=0" : "");
+  $page = max(1, (int)($_GET['page'] ?? 1));
+  $perPage = 25;
+  $offset = ($page-1) * $perPage;
+
+  $total = (int)DB::pdo()->query("SELECT COUNT(*) FROM people $where")->fetchColumn();
+  $st = DB::pdo()->prepare("SELECT * FROM people $where ORDER BY apellidos,nombre LIMIT ? OFFSET ?");
+  $st->bindValue(1, $perPage, \PDO::PARAM_INT);
+  $st->bindValue(2, $offset, \PDO::PARAM_INT);
+  $st->execute();
+  $people = $st->fetchAll();
+
+  return view('people/index', compact('people','show','total','page','perPage'));
+}
 
   public function create() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

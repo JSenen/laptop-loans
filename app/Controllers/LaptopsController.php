@@ -3,17 +3,36 @@ namespace App\Controllers;
 use App\Models\{DB, Laptop, Location};
 
 class LaptopsController {
-  public function index() {
-    // filtros: available | loaned | baja | all
-    $show = $_GET['show'] ?? 'available';
-    $estado = null;
-    if ($show === 'available') $estado = 'disponible';
-    elseif ($show === 'loaned') $estado = 'prestado';
-    elseif ($show === 'baja') $estado = 'baja';
+ public function index() {
+  $show = $_GET['show'] ?? 'available'; // available|loaned|baja|all
+  $estado = $show==='available'?'disponible':($show==='loaned'?'prestado':($show==='baja'?'baja':null));
 
-    $laptops = Laptop::all($estado);
-    return view('laptops/index', compact('laptops','show'));
-  }
+  $page = max(1, (int)($_GET['page'] ?? 1));
+  $perPage = 25; $offset = ($page-1)*$perPage;
+
+  $where = $estado ? "WHERE l.estado=?" : "";
+  $countSql = "SELECT COUNT(*) FROM laptops l $where";
+  $st = DB::pdo()->prepare($countSql);
+  if ($estado) $st->execute([$estado]); else $st->execute();
+  $total = (int)$st->fetchColumn();
+
+  $sql = "SELECT l.*, loc.nombre AS ubicacion
+          FROM laptops l
+          LEFT JOIN locations loc ON loc.id=l.ubicacion_id
+          $where
+          ORDER BY l.num_serie
+          LIMIT ? OFFSET ?";
+  $st = DB::pdo()->prepare($sql);
+  $i = 1;
+  if ($estado) { $st->bindValue($i++, $estado); }
+  $st->bindValue($i++, $perPage, \PDO::PARAM_INT);
+  $st->bindValue($i++, $offset,  \PDO::PARAM_INT);
+  $st->execute();
+  $laptops = $st->fetchAll();
+
+  return view('laptops/index', compact('laptops','show','total','page','perPage'));
+}
+
 
   public function create() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

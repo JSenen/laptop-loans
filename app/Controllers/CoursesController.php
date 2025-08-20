@@ -4,13 +4,21 @@ use App\Models\{Course, DB};
 
 class CoursesController {
   public function index() {
-    $show = $_GET['show'] ?? 'active'; // active|archived|all
-    $courses = ($show === 'all') ? Course::all(false)
-             : ($show === 'archived'
-                ? array_filter(Course::all(false), fn($c)=> (int)$c['activo']===0)
-                : Course::all(true));
-    return view('courses/index', compact('courses','show'));
-  }
+  $show = $_GET['show'] ?? 'active'; // active|archived|all
+  $where = $show==='active' ? "WHERE activo=1" : ($show==='archived' ? "WHERE activo=0" : "");
+  $page = max(1, (int)($_GET['page'] ?? 1));
+  $perPage = 25; $offset = ($page-1)*$perPage;
+
+  $total = (int)DB::pdo()->query("SELECT COUNT(*) FROM courses $where")->fetchColumn();
+  $st = DB::pdo()->prepare("SELECT * FROM courses $where ORDER BY fecha_inicio DESC, nombre LIMIT ? OFFSET ?");
+  $st->bindValue(1, $perPage, \PDO::PARAM_INT);
+  $st->bindValue(2, $offset,  \PDO::PARAM_INT);
+  $st->execute();
+  $courses = $st->fetchAll();
+
+  return view('courses/index', compact('courses','show','total','page','perPage'));
+}
+
 
   public function create() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

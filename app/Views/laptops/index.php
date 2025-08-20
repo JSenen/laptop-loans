@@ -51,7 +51,10 @@
           </form>
         </td>
       </tr>
+      
+
     <?php endforeach; ?>
     </tbody>
   </table>
+  <?= pagination_links($total ?? 0, $page ?? 1, $perPage ?? 25, 'laptops/index', ['show'=>$show ?? 'available']) ?>
 </div>

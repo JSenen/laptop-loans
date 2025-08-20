@@ -53,9 +53,29 @@ class HandoversController
     // ---------------------------------------------------------------------
 
     public function index() {
-        $history = Handover::history();
-        return view('handovers/index', compact('history'));
-    }
+  $page = max(1, (int)($_GET['page'] ?? 1));
+  $perPage = 25; $offset = ($page-1)*$perPage;
+
+  $total = (int)DB::pdo()->query("SELECT COUNT(*) FROM handovers")->fetchColumn();
+
+  $sql = "SELECT h.*, p.nombre, p.apellidos, l.num_serie,
+                 c.nombre AS curso, loc.nombre AS almacen
+          FROM handovers h
+          JOIN people p ON p.id=h.person_id
+          JOIN laptops l ON l.id=h.laptop_id
+          LEFT JOIN courses c ON c.id=h.course_id
+          LEFT JOIN locations loc ON loc.id=h.location_id
+          ORDER BY h.fecha DESC, h.id DESC
+          LIMIT ? OFFSET ?";
+  $st = DB::pdo()->prepare($sql);
+  $st->bindValue(1, $perPage, \PDO::PARAM_INT);
+  $st->bindValue(2, $offset,  \PDO::PARAM_INT);
+  $st->execute();
+  $history = $st->fetchAll();
+
+  return view('handovers/index', compact('history','total','page','perPage'));
+}
+
 
     // ----------------------------- ENTREGA --------------------------------
 

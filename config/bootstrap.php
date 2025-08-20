@@ -67,4 +67,39 @@ function csrf_field(): string {
            htmlspecialchars(csrf_token(), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') .
            '">';
 }
+function pagination_links(int $total, int $page, int $perPage, string $route, array $extra = []): string {
+    $pages = max(1, (int)ceil($total / $perPage));
+    if ($pages <= 1) return '';
+    $html = '<nav aria-label="Paginación"><ul class="pagination">';
+
+    $qbase = url($route) . ($extra ? '&' . http_build_query($extra) : '');
+    $link  = fn($p) => $qbase . '&page=' . $p;
+
+    // Prev
+    $disabled = $page <= 1 ? ' disabled' : '';
+    $html .= '<li class="page-item'.$disabled.'"><a class="page-link" href="'.($page>1?$link($page-1):'#').'">&laquo;</a></li>';
+
+    // Números (ventana de 5)
+    $start = max(1, $page - 2);
+    $end   = min($pages, $page + 2);
+    if ($start > 1) {
+        $html .= '<li class="page-item"><a class="page-link" href="'.$link(1).'">1</a></li>';
+        if ($start > 2) $html .= '<li class="page-item disabled"><span class="page-link">…</span></li>';
+    }
+    for ($i=$start; $i<=$end; $i++) {
+        $active = $i===$page ? ' active' : '';
+        $html .= '<li class="page-item'.$active.'"><a class="page-link" href="'.$link($i).'">'.$i.'</a></li>';
+    }
+    if ($end < $pages) {
+        if ($end < $pages-1) $html .= '<li class="page-item disabled"><span class="page-link">…</span></li>';
+        $html .= '<li class="page-item"><a class="page-link" href="'.$link($pages).'">'.$pages.'</a></li>';
+    }
+
+    // Next
+    $disabled = $page >= $pages ? ' disabled' : '';
+    $html .= '<li class="page-item'.$disabled.'"><a class="page-link" href="'.($page<$pages?$link($page+1):'#').'">&raquo;</a></li>';
+
+    return $html.'</ul></nav>';
+}
+
 
