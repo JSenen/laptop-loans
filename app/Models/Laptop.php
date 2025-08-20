@@ -3,12 +3,20 @@ namespace App\Models;
 use PDO;
 
 class Laptop {
-  public static function all(): array {
-    $sql = "SELECT l.*, loc.nombre AS ubicacion
+  public static function all(?string $estado = null): array {
+    $where = '';
+    $params = [];
+    if ($estado !== null) { $where = "WHERE l.estado = ?"; $params[] = $estado; }
+
+    $sql = "SELECT l.*, loc.nombre AS ubicacion,
+                   (SELECT COUNT(*) FROM handovers h WHERE h.laptop_id = l.id) AS movimientos
             FROM laptops l
             LEFT JOIN locations loc ON loc.id = l.ubicacion_id
+            $where
             ORDER BY l.num_serie";
-    return DB::pdo()->query($sql)->fetchAll(PDO::FETCH_ASSOC);
+    $st = DB::pdo()->prepare($sql);
+    $st->execute($params);
+    return $st->fetchAll(PDO::FETCH_ASSOC);
   }
 
   public static function create(array $d): int {
@@ -44,7 +52,8 @@ class Laptop {
 
   public static function findBySerie(string $serie): ?array {
     $st = DB::pdo()->prepare("
-      SELECT l.*, loc.nombre AS ubicacion
+      SELECT l.*, loc.nombre AS ubicacion,
+             (SELECT COUNT(*) FROM handovers h WHERE h.laptop_id = l.id) AS movimientos
       FROM laptops l
       LEFT JOIN locations loc ON loc.id=l.ubicacion_id
       WHERE l.num_serie=?
@@ -55,7 +64,8 @@ class Laptop {
 
   public static function find(int $id): ?array {
     $st = DB::pdo()->prepare("
-      SELECT l.*, loc.nombre AS ubicacion
+      SELECT l.*, loc.nombre AS ubicacion,
+             (SELECT COUNT(*) FROM handovers h WHERE h.laptop_id = l.id) AS movimientos
       FROM laptops l
       LEFT JOIN locations loc ON loc.id=l.ubicacion_id
       WHERE l.id=?
@@ -67,5 +77,16 @@ class Laptop {
   public static function setEstado(int $id, string $estado): void {
     $st = DB::pdo()->prepare("UPDATE laptops SET estado=? WHERE id=?");
     $st->execute([$estado, $id]);
+  }
+
+  public static function canDelete(int $id): bool {
+    $st = DB::pdo()->prepare("SELECT COUNT(*) FROM handovers WHERE laptop_id=?");
+    $st->execute([$id]);
+    return (int)$st->fetchColumn() === 0;
+  }
+
+  public static function delete(int $id): void {
+    $st = DB::pdo()->prepare("DELETE FROM laptops WHERE id=?");
+    $st->execute([$id]);
   }
 }

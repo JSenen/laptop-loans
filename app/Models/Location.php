@@ -16,4 +16,12 @@ class Location {
     $st->execute([$d['nombre'], $d['tipo'] ?? 'Otro', $d['descripcion'] ?? null]);
     return (int)DB::pdo()->lastInsertId();
   }
+  public static function update(int $id, array $d): void {
+    $st = DB::pdo()->prepare("UPDATE locations SET nombre=?, tipo=?, descripcion=? WHERE id=?");
+    $st->execute([$d['nombre'], $d['tipo'] ?? 'Otro', $d['descripcion'] ?? null, $id]);
+  }
+  public static function delete(int $id): void {
+    $st = DB::pdo()->prepare("DELETE FROM locations WHERE id=?");
+    $st->execute([$id]);
+  }
 }

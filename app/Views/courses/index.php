@@ -1,16 +1,17 @@
-<?php $title='Cursos'; $__view='courses/index'; ?>
+<?php $title='Cursos'; $view='courses/index'; ?>
 <div class="card">
-  <div style="display:flex;justify-content:space-between;align-items:center">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
     <h2>Cursos</h2>
-    <a href="<?= url('courses/create') ?>"><button>+ Nuevo curso</button></a>
+    <div>
+      <a class="btn btn-sm <?= ($show??'active')==='active'?'btn-primary':'btn-outline-primary' ?>" href="<?= url('courses/index') ?>&show=active">Activos</a>
+      <a class="btn btn-sm <?= ($show??'active')==='archived'?'btn-primary':'btn-outline-primary' ?>" href="<?= url('courses/index') ?>&show=archived">Archivados</a>
+      <a class="btn btn-sm <?= ($show??'active')==='all'?'btn-primary':'btn-outline-primary' ?>" href="<?= url('courses/index') ?>&show=all">Todos</a>
+      <a class="btn btn-sm btn-success" href="<?= url('courses/create') ?>">+ Nuevo</a>
+    </div>
   </div>
 
   <table class="table">
-    <thead>
-      <tr>
-        <th>Nombre</th><th>Inicio</th><th>Fin</th><th>Exportar</th>
-      </tr>
-    </thead>
+    <thead><tr><th>Nombre</th><th>Inicio</th><th>Fin</th><th style="width:170px">Acciones</th></tr></thead>
     <tbody>
     <?php foreach ($courses as $c): ?>
       <tr>
@@ -18,10 +19,18 @@
         <td><?= htmlspecialchars($c['fecha_inicio']) ?></td>
         <td><?= htmlspecialchars($c['fecha_fin']) ?></td>
         <td>
-          <a class="newtab" target="_blank" rel="noopener"
-             href="<?= url('exports/course') ?>&id=<?= (int)$c['id'] ?>">
-             📄 Excel
-          </a>
+          <a class="btn btn-sm btn-secondary" href="<?= url('courses/edit') ?>&id=<?= (int)$c['id'] ?>">Editar</a>
+          <?php if ((int)$c['activo']===1): ?>
+            <form method="post" action="<?= url('courses/archive') ?>" style="display:inline" onsubmit="return confirm('¿Archivar el curso «<?= htmlspecialchars($c['nombre']) ?>»?');">
+              <?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
+              <button class="btn btn-sm btn-warning">Archivar</button>
+            </form>
+          <?php else: ?>
+            <form method="post" action="<?= url('courses/restore') ?>" style="display:inline">
+              <?= csrf_field() ?><input type="hidden" name="id" value="<?= (int)$c['id'] ?>">
+              <button class="btn btn-sm btn-success">Restaurar</button>
+            </form>
+          <?php endif; ?>
         </td>
       </tr>
     <?php endforeach; ?>

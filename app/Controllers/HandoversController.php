@@ -227,9 +227,9 @@ class HandoversController
         }
 
         // GET: selects
-        $people    = DB::pdo()->query("SELECT id,nombre,apellidos,dni,tip FROM people ORDER BY nombre,apellidos")->fetchAll();
+        $people  = DB::pdo()->query("SELECT id,nombre,apellidos,dni,tip FROM people WHERE activo=1 ORDER BY nombre,apellidos")->fetchAll();
+        $courses = DB::pdo()->query("SELECT * FROM courses WHERE activo=1 ORDER BY nombre")->fetchAll();
         $laptops   = DB::pdo()->query("SELECT id,num_serie FROM laptops WHERE estado='disponible' ORDER BY num_serie")->fetchAll();
-        $courses   = Course::all();
         $locations = Location::all();
         return view('handovers/entrega', compact('people','laptops','courses','locations'));
     }

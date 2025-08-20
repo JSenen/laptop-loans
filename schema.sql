@@ -79,6 +79,11 @@ ALTER TABLE handovers
 INSERT INTO locations (nombre,tipo) VALUES
  ('Zona','Zona'), ('Comandancia','Comandancia')
  ON DUPLICATE KEY UPDATE nombre=VALUES(nombre);
+ 
+ -- Para poder editar personas y cursos sin perderlos de la base
+ALTER TABLE people  ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1 AFTER email;
+ALTER TABLE courses ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1 AFTER fecha_fin;
+
 
 
 
