@@ -1,14 +1,9 @@
 <?php $title='Acceso'; $view='auth/login'; ?>
-<div class="card">
-  <h2>Acceso</h2>
-  <?php if (!empty($error)): ?><p style="color:#ff7676"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-  <form method="post">
-    <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
-    <label>Usuario</label>
-    <input name="user" required>
-    <label>Contraseña</label>
-    <input name="pass" type="password" required>
-    <!-- <div style="margin-top:12px"><button>Entrar</button></div> -->
-    <p class="muted">Demo: admin / admin</p>
-  </form>
-</div>
+<form method="post" class="card" style="max-width:420px;margin:0 auto">
+  <?= csrf_field() ?>
+  <h2>Entrar</h2>
+  <?php if (!empty($error)): ?><div class="alert alert-danger"><?= htmlspecialchars($error) ?></div><?php endif; ?>
+  <div class="mb-3"><label class="form-label">Usuario o email</label><input name="user" class="form-control" required autofocus></div>
+  <div class="mb-3"><label class="form-label">Contraseña</label><input type="password" name="pass" class="form-control" required></div>
+  <button class="btn btn-primary w-100">Entrar</button>
+</form>

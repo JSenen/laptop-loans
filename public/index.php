@@ -15,6 +15,7 @@ use App\Controllers\ExportsController;
 use App\Controllers\LocationsController;
 
 
+
 // Simple router (?r=controller/action)
 $r = $_GET['r'] ?? 'dashboard/index';
 list($controller, $action) = array_pad(explode('/', $r), 2, 'index');
@@ -25,23 +26,28 @@ $map = [
   'laptops'   => LaptopsController::class,
   'courses'   => CoursesController::class,
   'handovers' => HandoversController::class,
-  'dashboard' => HandoversController::class, 
+  'dashboard' => HandoversController::class,
   'receipts'  => ReceiptsController::class,
   'exports'   => ExportsController::class,
   'locations' => LocationsController::class,
 ];
 
-if (!isset($map[$controller])) { http_response_code(404); echo "404"; exit; }
+if (!isset($map[$controller])) { http_response_code(404); exit('404'); }
+
+/* 👇 Rutas públicas (sin login) */
+$publicRoutes = ['auth/login']; // añade aquí otras si hiciera falta
+
+/* 👇 Redirige a login si no hay sesión */
+if (empty($_SESSION['user']) && !in_array("$controller/$action", $publicRoutes, true)) {
+  header('Location: ' . url('auth/login'));
+  exit;
+}
+
 $ctrl = new $map[$controller]();
-
-if (!method_exists($ctrl, $action)) { http_response_code(404); echo "404"; exit; }
-
-// Require login except auth/*
-// $publicRoutes = ['auth/login','auth/logout'];
-// if (!in_array("$controller/$action", $publicRoutes) && empty($_SESSION['user'])) {
-//     header('Location: ' . url('auth/login'));
-
-//     exit;
-// }
+if (!method_exists($ctrl, $action)) { http_response_code(404); exit('404'); }
 
 echo $ctrl->$action();
+
+
+
+

@@ -1,24 +1,23 @@
 <?php
 namespace App\Controllers;
+use App\Models\AuthService;
 
 class AuthController {
-    public function login() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            csrf_check();
-            $user = $_POST['user'] ?? '';
-            $pass = $_POST['pass'] ?? '';
-            // Simple auth: replace with DB users table if needed
-            if ($user === 'admin' && $pass === 'admin') {
-                $_SESSION['user'] = ['name' => 'Administrador'];
-                header('Location: ' . \url('handovers/index'));
-            }
-            $error = "Credenciales inválidas";
-            return view('auth/login', compact('error'));
-        }
-        return view('auth/login');
+  public function login() {
+    if ($_SERVER['REQUEST_METHOD']==='POST') {
+      csrf_check();
+      $u = trim($_POST['user'] ?? '');
+      $p = (string)($_POST['pass'] ?? '');
+      if (!$u || !$p || !AuthService::attempt($u,$p)) {
+        $error = 'Credenciales inválidas';
+        return view('auth/login', compact('error'));
+      }
+      header('Location: ' . url('dashboard/index')); exit;
     }
-    public function logout() {
-        session_destroy();
-        header('Location: /?r=auth/login'); exit;
-    }
+    return view('auth/login');
+  }
+  public function logout() {
+    AuthService::logout();
+    header('Location: ' . url('auth/login')); exit;
+  }
 }

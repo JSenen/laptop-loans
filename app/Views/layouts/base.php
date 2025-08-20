@@ -11,6 +11,12 @@
 <link rel="stylesheet" href="<?= asset('assets/css/app.css') ?>">
 </head>
 <body>
+  <div class="right">
+  <?php if (!empty($_SESSION['user'])): ?>
+    <span class="me-2">👤 <?= htmlspecialchars($_SESSION['user']['name']) ?></span>
+    <a href="<?= url('auth/logout') ?>">Salir</a>
+  <?php endif; ?>
+</div>
 <header class="topbar">
   <div class="brand"><a href="<?= url('handovers/index') ?>">💻 Gestor de Portátiles</a></div>
   <nav class="menu">
