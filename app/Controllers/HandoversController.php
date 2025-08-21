@@ -146,11 +146,17 @@ class HandoversController
                         'lugar' => $lugar,
                         'firma_receptor_nombre' => $row['nombre'].' '.$row['apellidos'],
                     ]);
-
+                    
+                    // ------------------    RECIBO ENTREGA ---------------------------------
+                    $serieSlug = $this->slug($row['num_serie'] ?? 'sin_serie');
+                    $cursoSlug = $this->slug($row['curso'] ?? 'sin_curso');
+                    $filename  = "entrega_{$serieSlug}_{$cursoSlug}_{$hid}.pdf";
+                    
                     $pdf   = PdfService::renderTemplate($this->tpl('entrega'), $data);
-                    $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", "entrega_{$hid}.pdf");
+                    $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", $filename);
                     DB::pdo()->prepare("UPDATE handovers SET recibo_pdf_path=? WHERE id=?")->execute([$saved, $hid]);
 
+                    
                     DB::pdo()->commit();
                 } catch (\Throwable $e) {
                     DB::pdo()->rollBack(); throw $e;
@@ -234,9 +240,14 @@ class HandoversController
                     'firma_receptor_nombre' => $row['nombre'].' '.$row['apellidos'],
                 ]);
 
-                $pdf   = PdfService::renderTemplate($this->tpl('entrega'), $data);
-                $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", "entrega_{$hid}.pdf");
-                DB::pdo()->prepare("UPDATE handovers SET recibo_pdf_path=? WHERE id=?")->execute([$saved, $hid]);
+                //-----------------   RECIBO ENTREGA B -----------------------------------------
+                $serieSlug = $this->slug($row['num_serie'] ?? 'sin_serie');
+                    $cursoSlug = $this->slug($row['curso'] ?? 'sin_curso');
+                    $filename  = "entrega_{$serieSlug}_{$cursoSlug}_{$hid}.pdf";
+
+                    $pdf   = PdfService::renderTemplate($this->tpl('entrega'), $data);
+                    $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", $filename);
+                    DB::pdo()->prepare("UPDATE handovers SET recibo_pdf_path=? WHERE id=?")->execute([$saved, $hid]);
 
                 DB::pdo()->commit();
             } catch (\Throwable $e) {
@@ -317,10 +328,16 @@ class HandoversController
                         'lugar' => $lugar,
                         'firma_receptor_nombre' => $row['nombre'].' '.$row['apellidos'],
                     ]);
+                    
+                    //-------------------    RECIBO DEVOLUCION ----------------------------------------
+                    $serieSlug = $this->slug($row['num_serie'] ?? 'sin_serie');
+                    $cursoSlug = $this->slug($row['curso'] ?? 'sin_curso');
+                    $filename  = "devolucion_{$serieSlug}_{$cursoSlug}_{$hid}.pdf";
 
                     $pdf   = PdfService::renderTemplate($this->tpl('devolucion'), $data);
-                    $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", "devolucion_{$hid}.pdf");
+                    $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", $filename);
                     DB::pdo()->prepare("UPDATE handovers SET recibo_pdf_path=? WHERE id=?")->execute([$saved, $hid]);
+
 
                     DB::pdo()->commit();
                 } catch (\Throwable $e) {
@@ -385,9 +402,15 @@ class HandoversController
                     'firma_receptor_nombre' => $row['nombre'].' '.$row['apellidos'],
                 ]);
 
-                $pdf   = PdfService::renderTemplate($this->tpl('devolucion'), $data);
-                $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", "devolucion_{$hid}.pdf");
-                DB::pdo()->prepare("UPDATE handovers SET recibo_pdf_path=? WHERE id=?")->execute([$saved, $hid]);
+                //-------------------    RECIBO DEVOLUCION ----------------------------------------
+                    $serieSlug = $this->slug($row['num_serie'] ?? 'sin_serie');
+                    $cursoSlug = $this->slug($row['curso'] ?? 'sin_curso');
+                    $filename  = "devolucion_{$serieSlug}_{$cursoSlug}_{$hid}.pdf";
+
+                    $pdf   = PdfService::renderTemplate($this->tpl('devolucion'), $data);
+                    $saved = PdfService::savePdf($pdf, BASE_PATH . "/storage/recibos", $filename);
+                    DB::pdo()->prepare("UPDATE handovers SET recibo_pdf_path=? WHERE id=?")->execute([$saved, $hid]);
+
 
                 DB::pdo()->commit();
             } catch (\Throwable $e) {
@@ -415,4 +438,17 @@ class HandoversController
         $locations = Location::all();
         return view('handovers/devolucion', compact('prestados','locations'));
     }
+
+    // --------------------------    IMPRESION DE RECIBOS ----------------------------------------
+    private function slug(string $s): string {
+    // pasa acentos a ASCII (si iconv no está, simplemente quita no-alfanuméricos)
+    if (function_exists('iconv')) {
+        $s2 = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $s);
+        if ($s2 !== false) $s = $s2;
+    }
+    $s = preg_replace('/[^A-Za-z0-9]+/', '_', $s);
+    $s = trim($s, '_');
+    return strtolower($s) ?: 'sin_nombre';
+    }
+
 }
