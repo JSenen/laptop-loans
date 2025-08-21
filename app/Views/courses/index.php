@@ -16,8 +16,8 @@
     <?php foreach ($courses as $c): ?>
       <tr>
         <td><?= htmlspecialchars($c['nombre']) ?></td>
-        <td><?= htmlspecialchars($c['fecha_inicio']) ?></td>
-        <td><?= htmlspecialchars($c['fecha_fin']) ?></td>
+        <td><?= htmlspecialchars(df($c['fecha_inicio'])) ?></td>
+        <td><?= htmlspecialchars(df($c['fecha_fin'])) ?></td>
         <td>
           <a class="btn btn-sm btn-secondary" href="<?= url('courses/edit') ?>&id=<?= (int)$c['id'] ?>">Editar</a>
           <?php if ((int)$c['activo']===1): ?>

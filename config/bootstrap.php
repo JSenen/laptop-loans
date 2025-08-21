@@ -100,6 +100,16 @@ function pagination_links(int $total, int $page, int $perPage, string $route, ar
     $html .= '<li class="page-item'.$disabled.'"><a class="page-link" href="'.($page<$pages?$link($page+1):'#').'">&raquo;</a></li>';
 
     return $html.'</ul></nav>';
+
+
 }
+
+
+    //--- FUNCION FORMATO FECHA 
+    function df(?string $date, string $fmt = 'd-m-Y'): string {
+    if (!$date) return '';
+    $ts = strtotime($date);
+    return $ts ? date($fmt, $ts) : '';
+    }
 
 
