@@ -15,6 +15,17 @@
     <label class="form-label">Modelo</label>
     <input name="modelo" class="form-control">
   </div>
+
+  <div class="mb-3">
+    <label class="form-label">Uso preferente</label>
+    <select name="uso_preferente" class="form-select">
+      <option value="">— Seleccionar —</option>
+      <?php foreach (($usos ?? []) as $u): ?>
+        <option value="<?= htmlspecialchars($u) ?>"><?= htmlspecialchars($u) ?></option>
+      <?php endforeach; ?>
+    </select>
+  </div>
+
   <div class="mb-3">
     <label class="form-label">Estado</label>
     <select name="estado" class="form-select">
@@ -23,6 +34,7 @@
       <option value="baja">Baja</option>
     </select>
   </div>
+
   <div class="mb-3">
     <label class="form-label">Ubicación (almacén)</label>
     <select name="ubicacion_id" class="form-select">

@@ -83,6 +83,8 @@ INSERT INTO locations (nombre,tipo) VALUES
  -- Para poder editar personas y cursos sin perderlos de la base
 ALTER TABLE people  ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1 AFTER email;
 ALTER TABLE courses ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1 AFTER fecha_fin;
+ -- Añadir campo preferencia en los portatiles
+ALTER TABLE laptops ADD COLUMN uso_preferente VARCHAR(50) NULL AFTER modelo;
 
 
 

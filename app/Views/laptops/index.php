@@ -25,6 +25,7 @@
         <td><?= htmlspecialchars($l['modelo']) ?></td>
         <td><?= htmlspecialchars($l['estado']) ?></td>
         <td><?= htmlspecialchars($l['ubicacion'] ?? '') ?></td>
+        <td><?= htmlspecialchars($l['uso_preferente'] ?? '') ?></td>
         <td>
           <a class="btn btn-sm btn-secondary" href="<?= url('laptops/edit') ?>&id=<?= (int)$l['id'] ?>">Editar</a>
 

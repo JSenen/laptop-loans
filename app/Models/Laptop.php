@@ -4,12 +4,10 @@ use PDO;
 
 class Laptop {
   public static function all(?string $estado = null): array {
-    $where = '';
-    $params = [];
+    $where = ''; $params = [];
     if ($estado !== null) { $where = "WHERE l.estado = ?"; $params[] = $estado; }
 
-    $sql = "SELECT l.*, loc.nombre AS ubicacion,
-                   (SELECT COUNT(*) FROM handovers h WHERE h.laptop_id = l.id) AS movimientos
+    $sql = "SELECT l.*, loc.nombre AS ubicacion
             FROM laptops l
             LEFT JOIN locations loc ON loc.id = l.ubicacion_id
             $where
@@ -21,13 +19,14 @@ class Laptop {
 
   public static function create(array $d): int {
     $st = DB::pdo()->prepare("
-      INSERT INTO laptops (num_serie, marca, modelo, estado, ubicacion_id)
-      VALUES (?,?,?,?,?)
+      INSERT INTO laptops (num_serie, marca, modelo, uso_preferente, estado, ubicacion_id)
+      VALUES (?,?,?,?,?,?)
     ");
     $st->execute([
       $d['num_serie'],
       $d['marca']   ?? null,
       $d['modelo']  ?? null,
+      $d['uso_preferente'] ?? null,
       $d['estado']  ?? 'disponible',
       $d['ubicacion_id'] ?? null,
     ]);
@@ -37,13 +36,14 @@ class Laptop {
   public static function update(int $id, array $d): void {
     $st = DB::pdo()->prepare("
       UPDATE laptops
-      SET num_serie=?, marca=?, modelo=?, estado=?, ubicacion_id=?
+      SET num_serie=?, marca=?, modelo=?, uso_preferente=?, estado=?, ubicacion_id=?
       WHERE id=?
     ");
     $st->execute([
       $d['num_serie'],
       $d['marca']   ?? null,
       $d['modelo']  ?? null,
+      $d['uso_preferente'] ?? null,
       $d['estado']  ?? 'disponible',
       $d['ubicacion_id'] ?? null,
       $id
@@ -52,8 +52,7 @@ class Laptop {
 
   public static function findBySerie(string $serie): ?array {
     $st = DB::pdo()->prepare("
-      SELECT l.*, loc.nombre AS ubicacion,
-             (SELECT COUNT(*) FROM handovers h WHERE h.laptop_id = l.id) AS movimientos
+      SELECT l.*, loc.nombre AS ubicacion
       FROM laptops l
       LEFT JOIN locations loc ON loc.id=l.ubicacion_id
       WHERE l.num_serie=?
@@ -64,8 +63,7 @@ class Laptop {
 
   public static function find(int $id): ?array {
     $st = DB::pdo()->prepare("
-      SELECT l.*, loc.nombre AS ubicacion,
-             (SELECT COUNT(*) FROM handovers h WHERE h.laptop_id = l.id) AS movimientos
+      SELECT l.*, loc.nombre AS ubicacion
       FROM laptops l
       LEFT JOIN locations loc ON loc.id=l.ubicacion_id
       WHERE l.id=?

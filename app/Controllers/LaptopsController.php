@@ -2,10 +2,16 @@
 namespace App\Controllers;
 use App\Models\{DB, Laptop, Location};
 
+
+
 class LaptopsController {
+
+private array $usos = ['General','Competencias Digitales','Alumnos','Formación','Administración','Otro'];
+    
  public function index() {
   $show = $_GET['show'] ?? 'available'; // available|loaned|baja|all
   $estado = $show==='available'?'disponible':($show==='loaned'?'prestado':($show==='baja'?'baja':null));
+
 
   $page = max(1, (int)($_GET['page'] ?? 1));
   $perPage = 25; $offset = ($page-1)*$perPage;
@@ -34,21 +40,23 @@ class LaptopsController {
 }
 
 
-  public function create() {
+   public function create() {
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       csrf_check();
       $ubicacionId = ($_POST['ubicacion_id'] ?? '') !== '' ? (int)$_POST['ubicacion_id'] : null;
       Laptop::create([
-        'num_serie'    => trim($_POST['num_serie']),
-        'marca'        => trim($_POST['marca'] ?? ''),
-        'modelo'       => trim($_POST['modelo'] ?? ''),
-        'estado'       => $_POST['estado'] ?? 'disponible',
-        'ubicacion_id' => $ubicacionId,
+        'num_serie'      => trim($_POST['num_serie']),
+        'marca'          => trim($_POST['marca'] ?? ''),
+        'modelo'         => trim($_POST['modelo'] ?? ''),
+        'uso_preferente' => $_POST['uso_preferente'] ?? null,
+        'estado'         => $_POST['estado'] ?? 'disponible',
+        'ubicacion_id'   => $ubicacionId,
       ]);
       header('Location: ' . url('laptops/index')); exit;
     }
     $locations = Location::all();
-    return view('laptops/create', compact('locations'));
+    $usos = $this->usos;
+    return view('laptops/create', compact('locations','usos'));
   }
 
   public function edit() {
@@ -59,17 +67,19 @@ class LaptopsController {
       csrf_check();
       $ubicacionId = ($_POST['ubicacion_id'] ?? '') !== '' ? (int)$_POST['ubicacion_id'] : null;
       Laptop::update($id, [
-        'num_serie'    => trim($_POST['num_serie']),
-        'marca'        => trim($_POST['marca'] ?? ''),
-        'modelo'       => trim($_POST['modelo'] ?? ''),
-        'estado'       => $_POST['estado'] ?? 'disponible',
-        'ubicacion_id' => $ubicacionId,
+        'num_serie'      => trim($_POST['num_serie']),
+        'marca'          => trim($_POST['marca'] ?? ''),
+        'modelo'         => trim($_POST['modelo'] ?? ''),
+        'uso_preferente' => $_POST['uso_preferente'] ?? null,
+        'estado'         => $_POST['estado'] ?? 'disponible',
+        'ubicacion_id'   => $ubicacionId,
       ]);
       header('Location: ' . url('laptops/index')); exit;
     }
     $laptop    = Laptop::find($id);
     $locations = Location::all();
-    return view('laptops/edit', compact('laptop','locations'));
+    $usos = $this->usos;
+    return view('laptops/edit', compact('laptop','locations','usos'));
   }
 
   public function archive() {
