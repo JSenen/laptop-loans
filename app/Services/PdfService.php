@@ -82,4 +82,25 @@ class PdfService {
         }
         return 'file://' . $abs;                   // -> file:///C:/...
     }
+
+
+    public static function imgDataUri(string $path): string {
+    $real = realpath($path) ?: $path;
+    if (!is_file($real)) return '';
+    // Detecta MIME
+    $mime = 'image/png';
+    if (function_exists('finfo_open')) {
+        $fi = finfo_open(FILEINFO_MIME_TYPE);
+        if ($fi) { $m = finfo_file($fi, $real); if ($m) $mime = $m; finfo_close($fi); }
+    } else {
+        $ext = strtolower(pathinfo($real, PATHINFO_EXTENSION));
+        $mime = $ext === 'jpg' || $ext === 'jpeg' ? 'image/jpeg' :
+                ($ext === 'gif' ? 'image/gif' :
+                ($ext === 'svg' ? 'image/svg+xml' : 'image/png'));
+    }
+    $data = @file_get_contents($real);
+    if ($data === false) return '';
+    return 'data:'.$mime.';base64,'.base64_encode($data);
+}
+
 }

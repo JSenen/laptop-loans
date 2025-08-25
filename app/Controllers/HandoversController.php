@@ -19,32 +19,38 @@ class HandoversController
     }
 
     /** Logos (file:// o http://) e items por defecto para el PDF */
-    private function logosIncludes(): array {
-        // Preferimos los nombres *_left/_right; si no existen, *_izq/_der
-        $left  = file_exists(BASE_PATH.'/public/assets/img/logo_left.png')
-               ? BASE_PATH.'/public/assets/img/logo_left.png'
-               : BASE_PATH.'/public/assets/img/logo_izq.png';
+    /** Logos (DATA-URI base64) e items por defecto para el PDF */
+private function logosIncludes(): array {
+    // candidatos por orden de preferencia
+    $leftCandidates = [
+        BASE_PATH . '/public/assets/img/logo_left.png',
+        BASE_PATH . '/public/assets/img/logo_izq.png',
+        BASE_PATH . '/public/assets/img/logo_left.svg',
+        BASE_PATH . '/public/assets/img/logo_izq.svg',
+    ];
+    $rightCandidates = [
+        BASE_PATH . '/public/assets/img/logo_right.png',
+        BASE_PATH . '/public/assets/img/logo_der.png',
+        BASE_PATH . '/public/assets/img/logo_right.svg',
+        BASE_PATH . '/public/assets/img/logo_der.svg',
+    ];
 
-        $right = file_exists(BASE_PATH.'/public/assets/img/logo_right.png')
-               ? BASE_PATH.'/public/assets/img/logo_right.png'
-               : BASE_PATH.'/public/assets/img/logo_der.png';
+    $left  = '';
+    foreach ($leftCandidates as $p) { if (is_file($p)) { $left  = \App\Services\PdfService::imgDataUri($p);  break; } }
+    $right = '';
+    foreach ($rightCandidates as $p) { if (is_file($p)) { $right = \App\Services\PdfService::imgDataUri($p); break; } }
 
-        // Puedes cambiar a URLs http si prefieres:
-        // $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        // $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'); // /laptop-loans/public
-        // $baseUrl = $scheme . '://' . $_SERVER['HTTP_HOST'] . $base;
+    return [
+        'logo_izq' => $left,
+        'logo_der' => $right,
+        'incluye_1' => 'Cargador',
+        'incluye_2' => 'Cable alimentación',
+        'incluye_3' => 'Maletín/Mochila',
+        'incluye_4' => 'Ratón',
+        'incluye_5' => '',
+    ];
+}
 
-        return [
-            'logo_izq' => PdfService::fileUrl($left),   // o "$baseUrl/assets/img/..." si usas http
-            'logo_der' => PdfService::fileUrl($right),
-            // Lista “Se entrega/devuelve con…”
-            'incluye_1' => 'Cargador',
-            'incluye_2' => 'Cable alimentación',
-            'incluye_3' => 'Maletín/Mochila',
-            'incluye_4' => 'Ratón',
-            'incluye_5' => '',
-        ];
-    }
 
     private function fmtFecha(string $ts): string {
         return date('Y-m-d H:i', strtotime($ts));

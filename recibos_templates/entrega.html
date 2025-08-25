@@ -5,12 +5,13 @@
 <title>Recibo de ENTREGA</title>
 <style>
   * { box-sizing: border-box; }
-  body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 12pt; color: #111; margin: 24mm 18mm; }
-  h1 { font-size: 22pt; margin: 6mm 0 2mm; }
-  .sub { font-size: 11pt; color:#333; margin-bottom: 6mm; }
+  body { font-family: DejaVu Sans, Arial, sans-serif; font-size: 10pt; color: #111; margin: 24mm 18mm; }
+  h1 { font-size: 10pt; margin: 6mm 0 2mm; }
+  h2 { font-size: 10pt; margin: 6mm 0 2mm; }
+  .sub { font-size: 8pt; color:#333; margin-bottom: 6mm; }
   .header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8mm; }
-  .logo { height:48px; }
-  .badge { font-size: 10pt; border:1px solid #666; padding:2px 8px; border-radius: 4px; display:inline-block; }
+  .logo { width:100px; height:auto; object-fit:contain; }
+  .badge { font-size: 8pt; border:1px solid #666; padding:2px 8px; border-radius: 4px; display:inline-block; }
   .box { border:1px solid #666; border-radius:6px; padding:6mm; margin:5mm 0; }
   .row { display:flex; gap:8mm; flex-wrap:wrap; }
   .col { flex: 1 1 60mm; }
@@ -22,17 +23,34 @@
   .signs { display:flex; justify-content:space-between; margin-top:10mm; gap:12mm; }
   .sign { flex:1 1 45%; text-align:center; }
   .line { border-top:1px solid #000; margin-top:22mm; }
+
+  .titlebar { width:100%; border-collapse:collapse; margin-bottom:8mm; }
+  .titlebar td { vertical-align:middle; }
+  .titlebar .side { width:120px; }        /* ancho reservado para que el título quede centrado */
+  .titlebar .title { text-align:center; font-size:12pt; font-weight:bold; }
+  .titlebar img { height:28px; width:auto; object-fit:contain; display:block; }
+
+
 </style>
 </head>
 <body>
-  <div class="header">
-    <img src="{logo_izq}" class="logo" />
-    <div class="badge">ENTREGA</div>
-    <img src="{logo_der}" class="logo" />
-  </div>
+  <table class="titlebar">
+  <tr>
+    <td class="side" style="text-align:left;">
+      <img src="{{logo_izq}}" alt="Logo izquierdo">
+    </td>
+    <td class="title">
+      <!-- Si quieres hacerlo variable, usa {{doc_titulo}} -->
+      Documento de entrega de material
+    </td>
+    <td class="side" style="text-align:right;">
+      <img src="{{logo_der}}" alt="Logo derecho">
+    </td>
+  </tr>
+</table>
 
-  <h1>Documento de recepción de material</h1>
-  <div class="sub"><strong>{curso}</strong></div>
+  
+  <div class="header"><strong>{curso}</strong></div>
 
   <div class="box">
     <div class="label">Datos del adjudicatario</div>
@@ -76,9 +94,18 @@
   </div>
 
   <div class="box">
+    <div class="label">
+    Yo, {nombre} {apellidos}, con DNI {dni} , y con nº de TIP {tip} en calidad de adjudicatario/ autorizado, cuyo resto de datos figuran, recibi en la Unidad del Grupo de Apoyo a Tecnologías de la Información de la Comandancia de San Andrés de la Barca (Barcelona):
+    Ordenador portátil {num_serie} {equipo_descripcion} . Serigrafiado en su parte superior con la Leyenda “ Plan de Recuperación, Trasformación y Resiliencia. Financiado por la Unión Europea”. El equipo portátil en su embalaje original e incluye cargador
+
+    </div>
+  </div>
+   <div class="box">
     <div class="muted">
-      Declaro haber recibido el material en buen estado, y me comprometo a su correcto uso, custodia y devolución 
-      en las mismas condiciones. En caso de incidencia, me comprometo a comunicarlo de inmediato al responsable del curso.
+        <div>
+            <h3>Instrucciones de entrega</h3>
+        </div>
+        Habiendo comprobado el estado y funcionamiento del material cedido, para que conste, firmo la presente
     </div>
   </div>
 
