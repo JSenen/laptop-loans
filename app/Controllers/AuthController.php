@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 use App\Models\AuthService;
+use App\Services\Audit;
+
 
 class AuthController {
   public function login() {

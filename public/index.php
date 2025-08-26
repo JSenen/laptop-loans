@@ -20,6 +20,14 @@ use App\Controllers\LocationsController;
 $r = $_GET['r'] ?? 'dashboard/index';
 list($controller, $action) = array_pad(explode('/', $r), 2, 'index');
 
+\App\Services\Logger::info('AUDIT visit', [
+  'user_id'  => $_SESSION['user']['id'] ?? null,
+  'username' => $_SESSION['user']['username'] ?? ($_SESSION['user']['name'] ?? 'anon'),
+  'route'    => "$controller/$action",
+  'ip'       => $_SERVER['REMOTE_ADDR'] ?? '',
+]);
+
+
 $map = [
   'auth'      => AuthController::class,
   'people'    => PeopleController::class,

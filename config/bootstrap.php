@@ -24,6 +24,45 @@ spl_autoload_register(function($class){
     if (file_exists($file)) require $file;
 });
 
+// --- Logging centralizado ---
+\App\Services\Logger::init($CONFIG['log']['dir'] ?? (BASE_PATH.'/storage/logs'), $CONFIG['log']['min_level'] ?? 'debug');
+
+// Que PHP también vuelque errores al archivo del día
+ini_set('log_errors', '1');
+ini_set('display_errors', '0'); // en producción pon 0
+ini_set('error_log', \App\Services\Logger::currentFile());
+
+// Registrar manejadores
+set_error_handler(function($severity, $message, $file, $line){
+  // Respetar error_reporting(); devuelve false para que PHP siga su flujo si no lo queremos capturar
+  if (!(error_reporting() & $severity)) return false;
+  \App\Services\Logger::error('PHP error: {msg} in {file}:{line}', [
+    'msg'=>$message, 'file'=>$file, 'line'=>$line, 'severity'=>$severity
+  ]);
+  return false; // deja que PHP continúe
+});
+
+set_exception_handler(function($ex){
+  \App\Services\Logger::error('Uncaught exception: {msg}', [
+    'msg'=>$ex->getMessage(),
+    'file'=>$ex->getFile(),
+    'line'=>$ex->getLine(),
+    'trace'=>$ex->getTraceAsString(),
+  ]);
+  http_response_code(500);
+  echo "Ha ocurrido un error. Revisa los logs en /storage/logs.";
+});
+
+register_shutdown_function(function(){
+  $e = error_get_last();
+  if ($e && in_array($e['type'], [E_ERROR,E_PARSE,E_CORE_ERROR,E_COMPILE_ERROR], true)) {
+    \App\Services\Logger::error('Fatal: {msg} in {file}:{line}', [
+      'msg'=>$e['message'], 'file'=>$e['file'], 'line'=>$e['line'], 'type'=>$e['type']
+    ]);
+  }
+});
+//***  FIN LOGGING */
+
 function view(string $view, array $params = []): string {
     $path = BASE_PATH . "/app/Views/$view.php";
     if (!file_exists($path)) return "View not found: $view";

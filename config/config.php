@@ -15,7 +15,7 @@ $CONFIG['auth'] = [
     'user' => 'gati',
     'pass' => '3-Aminavana',
 
-    'table'  => 'hesk_users',            // <-- si tu tabla se llama distinto, cámbialo
+    'table'  => 'hesk_users',            
     'fields' => [
       'id'       => 'id',
       'username' => 'user',
@@ -26,7 +26,14 @@ $CONFIG['auth'] = [
     ],
 
     'password_strategy' => 'password_hash', // bcrypt ($2y$)
-    'only_admins' => false,                 // pon true si solo quieres permitir isadmin=1
+    'only_admins' => false,                 // pon true solo permitir isadmin=1
   ],
 ];
+
+//****************** LOGS ************************************************************* */
+$CONFIG['log'] = [
+  'dir'       => BASE_PATH . '/storage/logs', // carpeta de logs
+  'min_level' => 'debug',                     // debug|info|warning|error
+];
+
 
