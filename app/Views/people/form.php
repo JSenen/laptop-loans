@@ -10,6 +10,8 @@
       <div><label>TIP</label><input name="tip"></div>
       <div><label>Teléfono</label><input name="telefono"></div>
       <div><label>Email</label><input name="email" type="email"></div>
+      <div><label>Unidad de Desstino</label><input name="unidad_destino" type="unidad_destino"></div>
+      <div>
     </div>
     <div style="margin-top:12px"><button>Guardar</button></div>
   </form>

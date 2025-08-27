@@ -10,7 +10,7 @@ class ExportsController {
 
     // /?r=exports/course&id={course_id}
     public function course() {
-    $courseId = (int)($_GET['id'] ?? 0);
+    $courseId = (int)($_GET['course_id'] ?? $_GET['id'] ?? 0);
     if (!$courseId) { http_response_code(400); echo "ID de curso requerido"; return; }
 
     // Curso
@@ -100,4 +100,57 @@ class ExportsController {
     );
 }
 
+  public function summary() {
+    $show = $_GET['show'] ?? 'all';
+
+    // 1) Cursos (según filtro)
+    $where = ''; $params = [];
+    if ($show === 'active')   { $where = 'WHERE activo=1'; }
+    elseif ($show === 'archived') { $where = 'WHERE activo=0'; }
+
+    $stc = DB::pdo()->prepare("SELECT id,nombre,fecha_inicio,fecha_fin,activo FROM courses $where ORDER BY fecha_inicio DESC, id DESC");
+    $stc->execute($params);
+    $courses = $stc->fetchAll(PDO::FETCH_ASSOC);
+
+    // 2) Contadores por curso (último movimiento por portátil dentro del curso)
+    $stCounts = DB::pdo()->prepare("
+      SELECT
+        SUM(tipo='entrega')   AS entregados,
+        SUM(tipo='devolucion') AS devueltos
+      FROM (
+        SELECT h.tipo
+        FROM handovers h
+        WHERE h.course_id = ?
+          AND h.id = (
+            SELECT h2.id FROM handovers h2
+            WHERE h2.course_id = h.course_id AND h2.laptop_id = h.laptop_id
+            ORDER BY h2.fecha DESC, h2.id DESC
+            LIMIT 1
+          )
+      ) t
+    ");
+
+    $headers = ['Curso','Inicio','Fin','Activo','Equipos con movimiento','Entregados','Devueltos'];
+    $rows = [];
+
+    foreach ($courses as $c) {
+      $stCounts->execute([(int)$c['id']]);
+      $cnt = $stCounts->fetch(PDO::FETCH_ASSOC) ?: ['entregados'=>0,'devueltos'=>0];
+      $ent = (int)($cnt['entregados'] ?? 0);
+      $dev = (int)($cnt['devueltos'] ?? 0);
+      $mov = $ent + $dev;
+
+      $rows[] = [
+        $c['nombre'],
+        $c['fecha_inicio'],   // deja ISO: mejor para Excel
+        $c['fecha_fin'],
+        ((int)$c['activo']===1 ? 'Sí' : 'No'),
+        $mov, $ent, $dev,
+      ];
+    }
+
+    $fname = 'resumen_cursos_'.date('Ymd_His').'.xlsx';
+    \App\Services\ExcelService::downloadXlsx($fname, $headers, $rows);
+  }
 }
+

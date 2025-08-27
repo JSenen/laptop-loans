@@ -30,6 +30,7 @@ class PeopleController {
         'tip'       => trim($_POST['tip'] ?? ''),
         'telefono'  => trim($_POST['telefono'] ?? ''),
         'email'     => trim($_POST['email'] ?? ''),
+        'unidad_destino' => trim($_POST['unidad_destino'] ?? ''),
       ]);
       header('Location: ' . url('people/index')); exit;
     }
@@ -48,6 +49,7 @@ class PeopleController {
         'tip'       => trim($_POST['tip'] ?? ''),
         'telefono'  => trim($_POST['telefono'] ?? ''),
         'email'     => trim($_POST['email'] ?? ''),
+        'unidad_destino' => trim($_POST['unidad_destino'] ?? ''),
       ]);
       header('Location: ' . url('people/index')); exit;
     }

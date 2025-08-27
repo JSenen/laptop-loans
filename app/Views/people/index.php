@@ -12,7 +12,7 @@
 
   <table class="table">
     <thead><tr>
-      <th>Nombre</th><th>Apellidos</th><th>DNI</th><th>TIP</th><th>Teléfono</th><th>Email</th><th style="width:170px">Acciones</th>
+      <th>Nombre</th><th>Apellidos</th><th>DNI</th><th>TIP</th><th>Teléfono</th><th>Email</th><th >Destino</th><th class="col-actions">Acciones</th>
     </tr></thead>
     <tbody>
     <?php foreach ($people as $p): ?>
@@ -23,6 +23,7 @@
         <td><?= htmlspecialchars($p['tip']) ?></td>
         <td><?= htmlspecialchars($p['telefono']) ?></td>
         <td><?= htmlspecialchars($p['email']) ?></td>
+        <td><?= htmlspecialchars($p['unidad_destino'] ) ?></td>
         <td>
           <a class="btn btn-sm btn-secondary" href="<?= url('people/edit') ?>&id=<?= (int)$p['id'] ?>">Editar</a>
           <?php if ((int)$p['activo']===1): ?>

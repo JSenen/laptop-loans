@@ -12,3 +12,16 @@ button.secondary{background:#25345c}
 .table{width:100%;border-collapse:collapse}
 .table th,.table td{padding:10px;border-bottom:1px solid #1f2a4a}
 .table th{color:#9fb4e8;text-align:left}
+/* Columna Acciones más ancha y sin saltos */
+.col-actions { width: 260px; }            /* ajusta 220–300px a tu gusto */
+.col-actions .actions-wrap{
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: nowrap;                       /* no permitir segunda línea */
+}
+.col-actions .actions-wrap .btn{
+  white-space: nowrap;                     /* evita que "Archivar" se parta */
+}
+.col-actions form{ display:inline; margin:0; } /* formularios en línea */
+.table td, .table th{ vertical-align: middle; }

@@ -17,24 +17,26 @@ class Person {
 
   public static function create(array $d): int {
     $st = DB::pdo()->prepare("
-      INSERT INTO people (nombre,apellidos,dni,tip,telefono,email,activo)
-      VALUES (?,?,?,?,?,?,1)
+      INSERT INTO people (nombre,apellidos,dni,tip,telefono,email,unidad_destino,activo)
+      VALUES (?,?,?,?,?,?,?,1)
     ");
     $st->execute([
       $d['nombre'] ?? '', $d['apellidos'] ?? '', $d['dni'] ?? '',
-      $d['tip'] ?? null, $d['telefono'] ?? null, $d['email'] ?? null
+      $d['tip'] ?? null, $d['telefono'] ?? null, $d['email'] ?? null,
+      $d['unidad_destino'] ?? null
     ]);
     return (int)DB::pdo()->lastInsertId();
   }
 
   public static function update(int $id, array $d): void {
     $st = DB::pdo()->prepare("
-      UPDATE people SET nombre=?, apellidos=?, dni=?, tip=?, telefono=?, email=?
+      UPDATE people SET nombre=?, apellidos=?, dni=?, tip=?, telefono=?, email=?, unidad_destino=?
       WHERE id=?
     ");
     $st->execute([
       $d['nombre'] ?? '', $d['apellidos'] ?? '', $d['dni'] ?? '',
-      $d['tip'] ?? null, $d['telefono'] ?? null, $d['email'] ?? null, $id
+      $d['tip'] ?? null, $d['telefono'] ?? null, $d['email'] ?? null,
+      $id['unidad_destino'] ?? null, $id
     ]);
   }
 

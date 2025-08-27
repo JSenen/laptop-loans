@@ -65,7 +65,7 @@ private function logosIncludes(): array {
   $total = (int)DB::pdo()->query("SELECT COUNT(*) FROM handovers")->fetchColumn();
 
   $sql = "SELECT h.*, p.nombre, p.apellidos, l.num_serie,
-                 c.nombre AS curso, loc.nombre AS almacen
+                 c.nombre AS curso, loc.nombre AS almacen, p.unidad_destino AS unidad
           FROM handovers h
           JOIN people p ON p.id=h.person_id
           JOIN laptops l ON l.id=h.laptop_id
@@ -124,7 +124,7 @@ private function logosIncludes(): array {
                     $st = DB::pdo()->prepare("
                         SELECT h.id,h.tipo,h.fecha,h.observaciones,
                                p.nombre,p.apellidos,p.dni,p.tip,p.telefono,p.email,
-                               l.num_serie, c.nombre AS curso
+                               l.num_serie, c.nombre AS curso, p.unidad_destino AS unidad
                         FROM handovers h
                         JOIN people p ON p.id=h.person_id
                         JOIN laptops l ON l.id=h.laptop_id
@@ -217,7 +217,7 @@ private function logosIncludes(): array {
                 $st = DB::pdo()->prepare("
                     SELECT h.id,h.tipo,h.fecha,h.observaciones,
                            p.nombre,p.apellidos,p.dni,p.tip,p.telefono,p.email,
-                           l.num_serie, c.nombre AS curso
+                           l.num_serie, c.nombre AS curso, p.unidad_destino AS unidad
                     FROM handovers h
                     JOIN people p ON p.id=h.person_id
                     JOIN laptops l ON l.id=h.laptop_id
@@ -306,7 +306,7 @@ private function logosIncludes(): array {
                     $st = DB::pdo()->prepare("
                         SELECT h.id,h.tipo,h.fecha,h.observaciones,
                                p.nombre,p.apellidos,p.dni,p.tip,p.telefono,p.email,
-                               l.num_serie, c.nombre AS curso
+                               l.num_serie, c.nombre AS curso, p.unidad_destino AS unidad
                         FROM handovers h
                         JOIN people p ON p.id=h.person_id
                         JOIN laptops l ON l.id=h.laptop_id
@@ -379,7 +379,7 @@ private function logosIncludes(): array {
                 $st = DB::pdo()->prepare("
                     SELECT h.id,h.tipo,h.fecha,h.observaciones,
                            p.nombre,p.apellidos,p.dni,p.tip,p.telefono,p.email,
-                           l.num_serie, c.nombre AS curso
+                           l.num_serie, c.nombre AS curso. p.unidad_destino AS unidad
                     FROM handovers h
                     JOIN people p ON p.id=h.person_id
                     JOIN laptops l ON l.id=h.laptop_id

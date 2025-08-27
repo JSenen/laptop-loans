@@ -86,6 +86,8 @@ ALTER TABLE courses ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1 AFTER fecha_
  -- Añadir campo preferencia en los portatiles
 ALTER TABLE laptops ADD COLUMN uso_preferente VARCHAR(50) NULL AFTER modelo;
 
+-- Añadir ubicación a personas
+ALTER TABLE people  ADD COLUMN unidad_destino VARCHAR(120) NULL AFTER apellidos;
 
 
 

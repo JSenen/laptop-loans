@@ -21,6 +21,12 @@
   <div class="mb-3"><label class="form-label">Email</label>
     <input name="email" type="email" class="form-control" value="<?= htmlspecialchars($person['email'] ?? '') ?>">
   </div>
+  <div class="mb-3">
+  <label class="form-label">Unidad de destino</label>
+  <input name="unidad_destino" class="form-control"
+         value="<?= htmlspecialchars($person['unidad_destino'] ?? '') ?>">
+</div>
+
 
   <button class="btn btn-primary">Guardar cambios</button>
   <a class="btn btn-link" href="<?= url('people/index') ?>">Cancelar</a>

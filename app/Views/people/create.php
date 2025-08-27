@@ -34,6 +34,11 @@
     <input type="email" name="email" class="form-control">
   </div>
 
+  <div class="mb-3">
+  <label class="form-label">Unidad de destino</label>
+  <input name="unidad_destino" class="form-control" placeholder="Comandancia / Unidad">
+</div>
+
   <div class="d-flex gap-2">
     <button class="btn btn-primary">Guardar</button>
     <a class="btn btn-outline-secondary" href="<?= url('people/index') ?>" target="_self">Cancelar</a>
