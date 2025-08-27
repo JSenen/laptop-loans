@@ -30,6 +30,8 @@ class Laptop {
       $d['estado']  ?? 'disponible',
       $d['ubicacion_id'] ?? null,
     ]);
+
+    
     return (int)DB::pdo()->lastInsertId();
   }
 

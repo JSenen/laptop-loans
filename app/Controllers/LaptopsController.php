@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 use App\Models\{DB, Laptop, Location};
+use App\Services\Audit;
+
 
 
 
@@ -52,6 +54,8 @@ private array $usos = ['General','Competencias Digitales','Alumnos','Formación'
         'estado'         => $_POST['estado'] ?? 'disponible',
         'ubicacion_id'   => $ubicacionId,
       ]);
+
+    
       header('Location: ' . url('laptops/index')); exit;
     }
     $locations = Location::all();
@@ -114,6 +118,9 @@ private array $usos = ['General','Competencias Digitales','Alumnos','Formación'
 
     if (!Laptop::canDelete($id)) { http_response_code(400); echo "No se puede borrar: tiene histórico de movimientos"; return; }
     Laptop::delete($id);
+
+     Audit::delete('laptops', $id);
+
     header('Location: ' . url('laptops/index')); exit;
   }
 }
