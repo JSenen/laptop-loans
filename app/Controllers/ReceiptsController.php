@@ -122,4 +122,36 @@ class ReceiptsController {
         header('Content-Disposition: inline; filename="declaracion_responsabilidad.pdf"');
         echo $pdf;
     }
+
+    /** Listado de todos los PDFs guardados en storage/recibos */
+    public function index() {
+        $dir = BASE_PATH . '/storage/recibos';
+        $files = [];
+        if (is_dir($dir)) {
+            foreach (glob($dir.'/*.pdf') ?: [] as $p) {
+                $files[] = [
+                    'name'  => basename($p),
+                    'size'  => filesize($p),
+                    'mtime' => filemtime($p),
+                ];
+            }
+            usort($files, fn($a,$b) => $b['mtime'] <=> $a['mtime']); // más recientes primero
+        }
+        return view('receipts/index', compact('files'));
+    }
+
+    /** Sirve el PDF (inline) de forma segura */
+    public function download() {
+        $name = basename($_GET['f'] ?? '');
+        if (!$name || !preg_match('/\.pdf$/i', $name)) {
+            http_response_code(400); echo 'Archivo no válido'; return;
+        }
+        $path = BASE_PATH . '/storage/recibos/' . $name;
+        if (!is_file($path)) { http_response_code(404); echo 'No existe'; return; }
+
+        header('Content-Type: application/pdf');
+        header('Content-Length: '.filesize($path));
+        header('Content-Disposition: inline; filename="'.$name.'"'); // o attachment para descargar
+        readfile($path); exit;
+    }
 }

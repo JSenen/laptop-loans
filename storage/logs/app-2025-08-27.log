@@ -117,3 +117,10 @@
 [2025-08-27 10:25:04] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
 [2025-08-27 10:25:04] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
 [2025-08-27 10:25:04] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
+[2025-08-27 13:38:24] INFO    AUDIT visit {"user_id":null,"username":"anon","route":"dashboard/index","ip":"127.0.0.1"}
+[2025-08-27 13:38:24] INFO    AUDIT visit {"user_id":null,"username":"anon","route":"auth/login","ip":"127.0.0.1"}
+[2025-08-27 13:38:33] INFO    AUDIT visit {"user_id":null,"username":"anon","route":"auth/login","ip":"127.0.0.1"}
+[2025-08-27 13:38:33] INFO    AUDIT login_success {"user_id":3,"username":"A58656F","ip":"127.0.0.1","route":"auth/login","login":"A58656F"}
+[2025-08-27 13:38:33] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"dashboard/index","ip":"127.0.0.1"}
+[2025-08-27 13:38:36] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"receipts/index","ip":"127.0.0.1"}
+[2025-08-27 13:38:40] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"receipts/download","ip":"127.0.0.1"}

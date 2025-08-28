@@ -38,6 +38,8 @@ $map = [
   'receipts'  => ReceiptsController::class,
   'exports'   => ExportsController::class,
   'locations' => LocationsController::class,
+  'receipts' => \App\Controllers\ReceiptsController::class,
+
 ];
 
 if (!isset($map[$controller])) { http_response_code(404); exit('404'); }
