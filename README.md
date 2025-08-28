@@ -39,9 +39,22 @@ Luego crea un servicio que lea `recibos_templates/*.html`, reemplace `{{placehol
 - Control de roles/usuarios desde BD
 - Firma manuscrita (canvas HTML5) y almacenamiento PNG/Base64
 
-##Para XAMP Composer
+## Para XAMP Composer
 
 extension=gd
 extension=zip
 extension=mbstring
 extension=fileinfo
+
+## Para IA
+
+Para incorporar la IA al programa
+. Descargamos he instalamos Ollaba
+. Ejecutamos los comandos
+`
+ollama pull llama3:8b
+ollama pull nomic-embed-text
+`
+. El servicio se expondrá en http://127.0.0.1:11434
+
+

@@ -28,6 +28,7 @@
 
       <a href="<?= url('handovers/entrega') ?>">Entrega</a>
       <a href="<?= url('handovers/devolucion') ?>">Devolución</a>
+      <a href="<?= url('ai/ask') ?>" target="_blank" rel="noopener">🤖 IA</a>
       <a href="<?= url('receipts/index') ?>" target="_blank" rel="noopener">🗂 Recibos</a>
 
   </nav>

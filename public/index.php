@@ -13,6 +13,7 @@ use App\Controllers\HandoversController;
 use App\Controllers\ReceiptsController;
 use App\Controllers\ExportsController;
 use App\Controllers\LocationsController;
+use App\Controllers\AiController;
 
 
 
@@ -39,6 +40,7 @@ $map = [
   'exports'   => ExportsController::class,
   'locations' => LocationsController::class,
   'receipts' => \App\Controllers\ReceiptsController::class,
+  'ai' => AiController::class,
 
 ];
 
