@@ -1,4 +1,4 @@
-<?php $title='Portátiles'; $view='laptops/index'; ?>
+<!-- <?php $title='Portátiles'; $view='laptops/index'; ?>
 <div class="card">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
     <h2>Portátiles</h2>
@@ -58,4 +58,61 @@
     </tbody>
   </table>
   <?= pagination_links($total ?? 0, $page ?? 1, $perPage ?? 25, 'laptops/index', ['show'=>$show ?? 'available']) ?>
+</div> -->
+
+<?php $title='Portátiles'; $view='laptops/index'; ?>
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h2>Portátiles</h2>
+    <a href="<?= url('laptops/create') ?>"><button>+ Nuevo portátil</button></a>
+  </div>
+
+  <!-- ▶ Resumen compacto -->
+  <div class="mb-2" style="display:flex;gap:8px;flex-wrap:wrap">
+    <span class="badge bg-secondary">Total: <?= (int)($total ?? count($laptops)) ?></span>
+
+    <?php if (!empty($countsEstado)): ?>
+      <?php foreach ($countsEstado as $e): ?>
+        <?php
+          $label = $e['estado'] === 'prestado' ? 'warning' : 'success';
+          $texto = $e['estado'] ?: '—';
+        ?>
+        <span class="badge bg-<?= $label ?>"><?= htmlspecialchars(ucfirst($texto)) ?>: <?= (int)$e['c'] ?></span>
+      <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php if (!empty($countsUso)): ?>
+      <?php foreach ($countsUso as $u): ?>
+        <span class="badge bg-info text-dark"><?= htmlspecialchars($u['uso']) ?>: <?= (int)$u['c'] ?></span>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nº Serie</th><th>Marca</th><th>Modelo</th><th>Uso pref.</th><th>Estado</th>
+        <th style="width:120px">Unid. (M+M)</th> <!-- 👈 NUEVA -->
+      </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($laptops as $l): ?>
+      <?php
+        $mk = strtolower(trim(($l['marca'] ?? '').'|'.($l['modelo'] ?? '')));
+        $unidadesMM = (int)($mapModelo[$mk] ?? 1);
+      ?>
+      <tr>
+        <td><?= htmlspecialchars($l['num_serie']) ?></td>
+        <td><?= htmlspecialchars($l['marca']) ?></td>
+        <td><?= htmlspecialchars($l['modelo']) ?></td>
+        <td><?= htmlspecialchars($l['uso_preferente'] ?? '') ?></td>
+        <td><?= htmlspecialchars($l['estado']) ?></td>
+        <td><span class="badge bg-dark"><?= $unidadesMM ?></span></td> <!-- 👈 NUEVA -->
+      </tr>
+    <?php endforeach; ?>
+    </tbody>
+  </table>
+
+  <?= pagination_links($total ?? 0, $page ?? 1, $perPage ?? 25, 'laptops/index') ?>
 </div>
+
