@@ -7,6 +7,7 @@
       <a class="btn btn-sm <?= ($show??'active')==='archived'?'btn-primary':'btn-outline-primary' ?>" href="<?= url('people/index') ?>&show=archived">Archivadas</a>
       <a class="btn btn-sm <?= ($show??'active')==='all'?'btn-primary':'btn-outline-primary' ?>" href="<?= url('people/index') ?>&show=all">Todas</a>
       <a class="btn btn-sm btn-success" href="<?= url('people/create') ?>">+ Nueva</a>
+      <a href="<?= url('people/import') ?>">Importar personas</a>
     </div>
   </div>
 

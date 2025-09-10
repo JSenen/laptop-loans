@@ -1,6 +1,8 @@
 <?php
 namespace App\Controllers;
 use App\Models\{Person, DB};
+use App\Services\ExcelService;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PeopleController {
   public function index() {
@@ -75,4 +77,192 @@ class PeopleController {
     Person::setActivo($id, true);
     header('Location: ' . url('people/index')); exit;
   }
+
+  /** Normaliza cabeceras: quita acentos, pasa a snake_case y minúsculas */
+  private function normKey(string $s): string {
+    $s = trim($s);
+    if (function_exists('iconv')) {
+      $t = @iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$s);
+      if ($t !== false) $s = $t;
+    }
+    $s = strtolower($s);
+    $s = preg_replace('/[^a-z0-9]+/','_',$s);
+    return trim($s,'_');
+  }
+
+  /** GET: formulario / POST: procesa el fichero */
+  public function import() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+      return view('people/import');
+    }
+    csrf_check();
+
+    if (empty($_FILES['file']['tmp_name'])) {
+      return view('people/import', ['error' => 'Sube un archivo XLSX o CSV']);
+    }
+
+    // Opciones del formulario
+    $mode = $_POST['mode'] ?? 'skip'; // 'skip' o 'update' (qué hacer si ya existe)
+    $dedup = $_POST['dedup'] ?? 'dni_tip_nombre'; // criterio de duplicado
+
+    // Mover a /storage/uploads
+    $dir = BASE_PATH . '/storage/uploads';
+    if (!is_dir($dir)) @mkdir($dir,0775,true);
+    $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+    $dest = $dir . '/' . uniqid('people_', true) . '.' . $ext;
+    if (!move_uploaded_file($_FILES['file']['tmp_name'], $dest)) {
+      return view('people/import', ['error' => 'No se pudo guardar el archivo subido']);
+    }
+
+    // Leer con PhpSpreadsheet (soporta xlsx y csv)
+    try {
+      if ($ext === 'csv') {
+        $reader = IOFactory::createReader('Csv');
+        $reader->setDelimiter(';'); // ajusta si usas coma
+        $ss = $reader->load($dest);
+      } else {
+        $ss = IOFactory::load($dest);
+      }
+    } catch (\Throwable $e) {
+      return view('people/import', ['error' => 'Archivo no válido: '.$e->getMessage()]);
+    }
+
+    $sheet = $ss->getSheet(0);
+    $highestRow = $sheet->getHighestRow();
+    $highestCol = $sheet->getHighestColumn();
+
+    // Cabeceras (fila 1)
+    $headers = [];
+    $hRow = $sheet->rangeToArray("A1:{$highestCol}1", null, true, false)[0] ?? [];
+    foreach ($hRow as $i => $name) {
+      $headers[$i] = $this->normKey((string)($name ?? ''));
+    }
+
+    // Mapeo esperado -> índice de columna (según nombre)
+    // Permite variantes de nombre de columna (Nombre, NOMBRE, name, etc.)
+    $want = [
+      'nombre'         => ['nombre','name','first_name'],
+      'apellidos'      => ['apellidos','apellido','last_name','surname'],
+      'dni'            => ['dni','nif','documento'],
+      'tip'            => ['tip'],
+      'telefono'       => ['telefono','tel','phone'],
+      'email'          => ['email','correo','mail'],
+      'unidad_destino' => ['unidad_destino','destino','unidad'],
+    ];
+    $col = array_fill_keys(array_keys($want), null);
+    foreach ($want as $field => $aliases) {
+      foreach ($headers as $i => $hk) {
+        if (in_array($hk, $aliases, true)) { $col[$field] = $i; break; }
+      }
+    }
+
+    $report = [
+      'total' => 0,
+      'insertados' => 0,
+      'actualizados' => 0,
+      'omitidos' => 0,
+      'errores' => [],
+      'file_saved' => $dest,
+    ];
+
+    $pdo = DB::pdo();
+    $pdo->beginTransaction();
+    try {
+      for ($r = 2; $r <= $highestRow; $r++) {
+        $row = $sheet->rangeToArray("A{$r}:{$highestCol}{$r}", null, true, false)[0] ?? [];
+        $report['total']++;
+
+        // Leer campos con seguridad
+        $v = function($idx) use ($row) {
+          return isset($row[$idx]) ? trim((string)$row[$idx]) : '';
+        };
+
+        $data = [
+          'nombre'         => $col['nombre']         !== null ? $v($col['nombre'])         : '',
+          'apellidos'      => $col['apellidos']      !== null ? $v($col['apellidos'])      : '',
+          'dni'            => $col['dni']            !== null ? $v($col['dni'])            : null,
+          'tip'            => $col['tip']            !== null ? $v($col['tip'])            : null,
+          'telefono'       => $col['telefono']       !== null ? $v($col['telefono'])       : null,
+          'email'          => $col['email']          !== null ? $v($col['email'])          : null,
+          'unidad_destino' => $col['unidad_destino'] !== null ? $v($col['unidad_destino']) : null,
+        ];
+
+        // Reglas mínimas: Nombre + Apellidos
+        if ($data['nombre']==='' || $data['apellidos']==='') {
+          $report['omitidos']++;
+          $report['errores'][] = "Fila {$r}: faltan Nombre/Apellidos";
+          continue;
+        }
+
+        // Buscar si existe (criterio deduplicación)
+        $existing = null;
+        if ($dedup === 'dni_tip_nombre') {
+          if (!empty($data['dni'])) {
+            $st = $pdo->prepare("SELECT * FROM people WHERE dni=? LIMIT 1");
+            $st->execute([$data['dni']]); $existing = $st->fetch();
+          }
+          if (!$existing && !empty($data['tip'])) {
+            $st = $pdo->prepare("SELECT * FROM people WHERE tip=? LIMIT 1");
+            $st->execute([$data['tip']]); $existing = $st->fetch();
+          }
+          if (!$existing) {
+            $st = $pdo->prepare("SELECT * FROM people WHERE nombre=? AND apellidos=? LIMIT 1");
+            $st->execute([$data['nombre'], $data['apellidos']]); $existing = $st->fetch();
+          }
+        } else if ($dedup === 'dni_only') {
+          if (!empty($data['dni'])) {
+            $st = $pdo->prepare("SELECT * FROM people WHERE dni=? LIMIT 1");
+            $st->execute([$data['dni']]); $existing = $st->fetch();
+          }
+        } else if ($dedup === 'name_lastname') {
+          $st = $pdo->prepare("SELECT * FROM people WHERE nombre=? AND apellidos=? LIMIT 1");
+          $st->execute([$data['nombre'], $data['apellidos']]); $existing = $st->fetch();
+        }
+
+        try {
+          if ($existing) {
+            if ($mode === 'update') {
+              // Actualizar campos no vacíos
+              $upd = [
+                'nombre'         => $data['nombre']         ?: $existing['nombre'],
+                'apellidos'      => $data['apellidos']      ?: $existing['apellidos'],
+                'dni'            => $data['dni']            ?: $existing['dni'],
+                'tip'            => $data['tip']            ?: $existing['tip'],
+                'telefono'       => $data['telefono']       ?: $existing['telefono'],
+                'email'          => $data['email']          ?: $existing['email'],
+                'unidad_destino' => $data['unidad_destino'] ?: ($existing['unidad_destino'] ?? null),
+              ];
+              Person::update((int)$existing['id'], $upd);
+              $report['actualizados']++;
+            } else {
+              $report['omitidos']++;
+            }
+          } else {
+            Person::create($data);
+            $report['insertados']++;
+          }
+        } catch (\Throwable $e) {
+          $report['errores'][] = "Fila {$r}: ".$e->getMessage();
+        }
+      }
+
+      $pdo->commit();
+    } catch (\Throwable $e) {
+      $pdo->rollBack();
+      return view('people/import', ['error' => 'Error en importación: '.$e->getMessage()]);
+    }
+
+    return view('people/import', compact('report','mode','dedup'));
+  }
+
+  /** Plantilla de Excel para descargar */
+  public function template() {
+    $headers = ['Nombre','Apellidos','DNI','TIP','Teléfono','Email','Unidad destino'];
+    $rows = [
+      ['Ana','Pérez Gómez','12345678A','','600123123','ana@ejemplo.es','Comandancia X'],
+      ['Luis','Lamas','','TIP123','600999888','luis@ejemplo.es','Unidad Y'],
+    ];
+    \App\Services\ExcelService::downloadXlsx('plantilla_personas.xlsx', $headers, $rows);
+  }
+
 }
