@@ -10,37 +10,37 @@ class LaptopsController {
 
 private array $usos = ['General','Competencias Digitales','Alumnos','Formación','Administración','Otro'];
     
-//  public function index() {
-//   $show = $_GET['show'] ?? 'available'; // available|loaned|baja|all
-//   $estado = $show==='available'?'disponible':($show==='loaned'?'prestado':($show==='baja'?'baja':null));
+ public function index() {
+  $show = $_GET['show'] ?? 'available'; // available|loaned|baja|all
+  $estado = $show==='available'?'disponible':($show==='loaned'?'prestado':($show==='baja'?'baja':null));
 
 
-//   $page = max(1, (int)($_GET['page'] ?? 1));
-//   $perPage = 25; $offset = ($page-1)*$perPage;
+  $page = max(1, (int)($_GET['page'] ?? 1));
+  $perPage = 25; $offset = ($page-1)*$perPage;
 
-//   $where = $estado ? "WHERE l.estado=?" : "";
-//   $countSql = "SELECT COUNT(*) FROM laptops l $where";
-//   $st = DB::pdo()->prepare($countSql);
-//   if ($estado) $st->execute([$estado]); else $st->execute();
-//   $total = (int)$st->fetchColumn();
+  $where = $estado ? "WHERE l.estado=?" : "";
+  $countSql = "SELECT COUNT(*) FROM laptops l $where";
+  $st = DB::pdo()->prepare($countSql);
+  if ($estado) $st->execute([$estado]); else $st->execute();
+  $total = (int)$st->fetchColumn();
 
-//   $sql = "SELECT l.*, loc.nombre AS ubicacion
-//           FROM laptops l
-//           LEFT JOIN locations loc ON loc.id=l.ubicacion_id
-//           $where
-//           ORDER BY l.num_serie
-//           LIMIT ? OFFSET ?";
-//   $st = DB::pdo()->prepare($sql);
-//   $i = 1;
-//   if ($estado) { $st->bindValue($i++, $estado); }
-//   $st->bindValue($i++, $perPage, \PDO::PARAM_INT);
-//   $st->bindValue($i++, $offset,  \PDO::PARAM_INT);
-//   $st->execute();
-//   $laptops = $st->fetchAll();
+  $sql = "SELECT l.*, loc.nombre AS ubicacion
+          FROM laptops l
+          LEFT JOIN locations loc ON loc.id=l.ubicacion_id
+          $where
+          ORDER BY l.num_serie
+          LIMIT ? OFFSET ?";
+  $st = DB::pdo()->prepare($sql);
+  $i = 1;
+  if ($estado) { $st->bindValue($i++, $estado); }
+  $st->bindValue($i++, $perPage, \PDO::PARAM_INT);
+  $st->bindValue($i++, $offset,  \PDO::PARAM_INT);
+  $st->execute();
+  $laptops = $st->fetchAll();
 
-//   return view('laptops/index', compact('laptops','show','total','page','perPage'));
-// }
-public function index() {
+  return view('laptops/index', compact('laptops','show','total','page','perPage'));
+}
+public function index2() {
     $page    = max(1, (int)($_GET['page'] ?? 1));
     $perPage = 25;
     $offset  = ($page - 1) * $perPage;
