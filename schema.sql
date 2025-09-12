@@ -90,4 +90,15 @@ ALTER TABLE laptops ADD COLUMN uso_preferente VARCHAR(50) NULL AFTER modelo;
 ALTER TABLE people  ADD COLUMN unidad_destino VARCHAR(120) NULL AFTER apellidos;
 
 
+SELECT dni, COUNT(*) FROM people GROUP BY dni HAVING COUNT(*)>1;
+-- (no debería devolver nada salvo dni NULL)
+
+-- permite NULL (en vez de NOT NULL DEFAULT '')
+ALTER TABLE people MODIFY dni VARCHAR(20) NULL DEFAULT NULL;
+ALTER TABLE people MODIFY tip VARCHAR(20) NULL DEFAULT NULL;
+
+-- limpia registros que tengan cadena vacía guardada
+UPDATE people SET dni = NULL WHERE dni = '';
+UPDATE people SET tip = NULL WHERE tip = '';
+
 

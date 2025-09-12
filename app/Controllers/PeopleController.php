@@ -5,6 +5,26 @@ use App\Services\ExcelService;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PeopleController {
+
+  /** Normaliza identificadores (DNI/TIP): trim, quita espacios (incl. NBSP) y pasa a MAYÚSCULAS */
+private function normId(?string $s): ?string {
+    if ($s === null) return null;
+    $s = preg_replace('/\x{00A0}/u', ' ', $s); // NBSP -> espacio
+    $s = trim($s);
+    if ($s === '') return null;
+    // elimina todos los espacios internos
+    $s = preg_replace('/\s+/u', '', $s);
+    return strtoupper($s);
+}
+/** Convierte '' o solo espacios a NULL */
+private function nullIfEmpty(?string $s): ?string {
+    if ($s === null) return null;
+    $s = preg_replace('/\x{00A0}/u', ' ', $s);
+    $s = trim($s);
+    return $s === '' ? null : $s;
+}
+
+
   public function index() {
   $show = $_GET['show'] ?? 'active'; // active|archived|all
   $where = $show==='active' ? "WHERE activo=1" : ($show==='archived' ? "WHERE activo=0" : "");
@@ -172,52 +192,52 @@ class PeopleController {
         $row = $sheet->rangeToArray("A{$r}:{$highestCol}{$r}", null, true, false)[0] ?? [];
         $report['total']++;
 
-        // Leer campos con seguridad
-        $v = function($idx) use ($row) {
-          return isset($row[$idx]) ? trim((string)$row[$idx]) : '';
-        };
+       // helper para leer una celda con seguridad
+$v = function($idx) use ($row) { return isset($row[$idx]) ? (string)$row[$idx] : ''; };
 
-        $data = [
-          'nombre'         => $col['nombre']         !== null ? $v($col['nombre'])         : '',
-          'apellidos'      => $col['apellidos']      !== null ? $v($col['apellidos'])      : '',
-          'dni'            => $col['dni']            !== null ? $v($col['dni'])            : null,
-          'tip'            => $col['tip']            !== null ? $v($col['tip'])            : null,
-          'telefono'       => $col['telefono']       !== null ? $v($col['telefono'])       : null,
-          'email'          => $col['email']          !== null ? $v($col['email'])          : null,
-          'unidad_destino' => $col['unidad_destino'] !== null ? $v($col['unidad_destino']) : null,
-        ];
+// Construcción de datos (NUNCA '' -> siempre NULL si vacío)
+$data = [
+  'nombre'         => $col['nombre']         !== null ? trim($v($col['nombre']))         : '',
+  'apellidos'      => $col['apellidos']      !== null ? trim($v($col['apellidos']))      : '',
+  'dni'            => $col['dni']            !== null ? $this->normId($v($col['dni']))   : null,
+  'tip'            => $col['tip']            !== null ? $this->normId($v($col['tip']))   : null,
+  'telefono'       => $col['telefono']       !== null ? $this->nullIfEmpty($v($col['telefono'])) : null,
+  'email'          => $col['email']          !== null ? $this->nullIfEmpty($v($col['email']))    : null,
+  'unidad_destino' => $col['unidad_destino'] !== null ? $this->nullIfEmpty($v($col['unidad_destino'])) : null,
+];
 
-        // Reglas mínimas: Nombre + Apellidos
-        if ($data['nombre']==='' || $data['apellidos']==='') {
-          $report['omitidos']++;
-          $report['errores'][] = "Fila {$r}: faltan Nombre/Apellidos";
-          continue;
-        }
+// Reglas mínimas
+if ($data['nombre']==='' || $data['apellidos']==='') {
+  $report['omitidos']++;
+  $report['errores'][] = "Fila {$r}: faltan Nombre/Apellidos";
+  continue;
+}
 
-        // Buscar si existe (criterio deduplicación)
-        $existing = null;
-        if ($dedup === 'dni_tip_nombre') {
-          if (!empty($data['dni'])) {
-            $st = $pdo->prepare("SELECT * FROM people WHERE dni=? LIMIT 1");
-            $st->execute([$data['dni']]); $existing = $st->fetch();
-          }
-          if (!$existing && !empty($data['tip'])) {
-            $st = $pdo->prepare("SELECT * FROM people WHERE tip=? LIMIT 1");
-            $st->execute([$data['tip']]); $existing = $st->fetch();
-          }
-          if (!$existing) {
-            $st = $pdo->prepare("SELECT * FROM people WHERE nombre=? AND apellidos=? LIMIT 1");
-            $st->execute([$data['nombre'], $data['apellidos']]); $existing = $st->fetch();
-          }
-        } else if ($dedup === 'dni_only') {
-          if (!empty($data['dni'])) {
-            $st = $pdo->prepare("SELECT * FROM people WHERE dni=? LIMIT 1");
-            $st->execute([$data['dni']]); $existing = $st->fetch();
-          }
-        } else if ($dedup === 'name_lastname') {
-          $st = $pdo->prepare("SELECT * FROM people WHERE nombre=? AND apellidos=? LIMIT 1");
-          $st->execute([$data['nombre'], $data['apellidos']]); $existing = $st->fetch();
-        }
+// DEDUPE: solo si DNI/TIP NO son null
+$existing = null;
+if ($dedup === 'dni_tip_nombre') {
+  if ($data['dni'] !== null) {
+    $st = $pdo->prepare("SELECT * FROM people WHERE dni=? LIMIT 1");
+    $st->execute([$data['dni']]); $existing = $st->fetch();
+  }
+  if (!$existing && $data['tip'] !== null) {
+    $st = $pdo->prepare("SELECT * FROM people WHERE tip=? LIMIT 1");
+    $st->execute([$data['tip']]); $existing = $st->fetch();
+  }
+  if (!$existing) {
+    $st = $pdo->prepare("SELECT * FROM people WHERE nombre=? AND apellidos=? LIMIT 1");
+    $st->execute([$data['nombre'], $data['apellidos']]); $existing = $st->fetch();
+  }
+} elseif ($dedup === 'dni_only') {
+  if ($data['dni'] !== null) {
+    $st = $pdo->prepare("SELECT * FROM people WHERE dni=? LIMIT 1");
+    $st->execute([$data['dni']]); $existing = $st->fetch();
+  }
+} elseif ($dedup === 'name_lastname') {
+  $st = $pdo->prepare("SELECT * FROM people WHERE nombre=? AND apellidos=? LIMIT 1");
+  $st->execute([$data['nombre'], $data['apellidos']]); $existing = $st->fetch();
+}
+
 
         try {
           if ($existing) {

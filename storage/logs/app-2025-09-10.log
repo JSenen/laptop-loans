@@ -63,3 +63,25 @@
 [2025-09-10 10:10:05] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/template","ip":"127.0.0.1"}
 [2025-09-10 10:10:53] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
 [2025-09-10 10:10:56] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
+[2025-09-10 10:23:07] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"handovers/entrega","ip":"127.0.0.1"}
+[2025-09-10 10:23:24] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"handovers/entrega","ip":"127.0.0.1"}
+[2025-09-10 10:23:25] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"handovers/index","ip":"127.0.0.1"}
+[2025-09-10 10:23:28] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"receipts/ver","ip":"127.0.0.1"}
+[2025-09-10 13:39:20] INFO    AUDIT visit {"user_id":null,"username":"anon","route":"dashboard/index","ip":"127.0.0.1"}
+[2025-09-10 13:39:20] INFO    AUDIT visit {"user_id":null,"username":"anon","route":"auth/login","ip":"127.0.0.1"}
+[2025-09-10 13:39:27] INFO    AUDIT visit {"user_id":null,"username":"anon","route":"auth/login","ip":"127.0.0.1"}
+[2025-09-10 13:39:27] INFO    AUDIT login_success {"user_id":3,"username":"A58656F","ip":"127.0.0.1","route":"auth/login","login":"A58656F"}
+[2025-09-10 13:39:28] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"dashboard/index","ip":"127.0.0.1"}
+[2025-09-10 13:39:30] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
+[2025-09-10 13:39:33] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
+[2025-09-10 13:39:39] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
+[2025-09-10 13:39:42] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
+[2025-09-10 13:50:20] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
+[2025-09-10 13:50:26] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
+[2025-09-10 13:50:33] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
+[2025-09-10 13:50:39] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
+[2025-09-10 13:51:17] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
+[2025-09-10 13:51:23] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/import","ip":"127.0.0.1"}
+[2025-09-10 13:51:27] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
+[2025-09-10 17:43:52] INFO    AUDIT visit {"user_id":3,"username":"A58656F","route":"people/index","ip":"127.0.0.1"}
+[2025-09-10 17:43:54] ERROR   Uncaught exception: SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión {"msg":"SQLSTATE[HY000] [2002] No se puede establecer una conexión ya que el equipo de destino denegó expresamente dicha conexión","file":"C:\\xampp\\htdocs\\laptop-loans\\app\\Models\\DB.php","line":13,"trace":"#0 C:\\xampp\\htdocs\\laptop-loans\\app\\Models\\DB.php(13): PDO->__construct('mysql:host=127....', 'gati', Object(SensitiveParameterValue), Array)\n#1 C:\\xampp\\htdocs\\laptop-loans\\app\\Controllers\\PeopleController.php(15): App\\Models\\DB::pdo()\n#2 C:\\xampp\\htdocs\\laptop-loans\\public\\index.php(61): App\\Controllers\\PeopleController->index()\n#3 {main}"}
